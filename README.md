@@ -2,10 +2,12 @@
 
 ## 入口
 
+打开 [index.html](./index.html) 选择「交互原型」或「技术方案」。
+
 | 文件 | 说明 |
 |------|------|
-| [index.html](./index.html) | 自动打开统一版原型 |
-| [ai-search-v1.html](./ai-search-v1.html) | 交互原型（侧栏 + 三屏） |
+| [index.html](./index.html) | 项目导航页 |
+| [ai-search-v1.html](./ai-search-v1.html) | 交互原型（侧栏含「查看技术方案 v5」入口） |
 | [ai-search-dify-architecture-draft.html](./ai-search-dify-architecture-draft.html) | 意图识别技术方案 v5 |
 
 ## v5 落地文件
