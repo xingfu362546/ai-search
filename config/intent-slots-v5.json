@@ -1,0 +1,90 @@
+{
+  "$schema": "intent-slots-v5",
+  "description": "AI 智搜 · 前置检索字段定义（v5）",
+  "intent_codes": {
+    "course_enroll": "与课程、报读、期数、导师、开课、报名相关",
+    "other": "商城、音频、视频、文章、盲盒、闲聊或与课程无关的泛搜"
+  },
+  "slots": [
+    {
+      "name": "course_id",
+      "type": "string|null",
+      "required_for_api": false,
+      "description": "标准课程 ID，由 BFF 根据 course_name 从词典解析",
+      "api_param": "course_id"
+    },
+    {
+      "name": "course_name",
+      "type": "string|null",
+      "required_for_api": false,
+      "description": "标准课名或用户原话",
+      "api_param": "q",
+      "user_examples": ["智慧父母一阶", "高EQ领袖营", "一阶", "父母课"]
+    },
+    {
+      "name": "city",
+      "type": "string|null",
+      "required_for_api": false,
+      "description": "城市，不含「站」字",
+      "api_param": "city",
+      "user_examples": ["广州", "南宁站", "深圳"]
+    },
+    {
+      "name": "instructor_name",
+      "type": "string|null",
+      "required_for_api": false,
+      "description": "导师姓名或业务标签",
+      "api_param": "instructor",
+      "user_examples": ["总导师", "6Q张三", "授课导师"]
+    },
+    {
+      "name": "phase_no",
+      "type": "number|null",
+      "required_for_api": false,
+      "description": "期数序号",
+      "api_param": "phase_no",
+      "user_examples": ["第533期", "533期"]
+    },
+    {
+      "name": "time_window_days",
+      "type": "number",
+      "required_for_api": false,
+      "default": 30,
+      "description": "查询多少天内开课",
+      "api_param": "start_within_days",
+      "user_examples": ["最近", "一个月内", "近期开课"]
+    },
+    {
+      "name": "keyword",
+      "type": "string",
+      "required_for_api": true,
+      "description": "用户原 query，跳转「全部 Tab」时使用",
+      "api_param": null
+    }
+  ],
+  "ready_for_api_rules": {
+    "any_of": [
+      "course_id 不为空",
+      "course_name 能匹配词典标准课名",
+      "city 不为空 且 query 含动作词：报读|报名|开课|期数|课程",
+      "instructor_name 不为空 且 query 含动作词",
+      "history 中已有 course/city 且当前为续聊（还有吗|名额|报读|XX站）"
+    ],
+    "action_words": ["报读", "报名", "开课", "期数", "课程", "还有吗", "名额", "排队"]
+  },
+  "output_schema": {
+    "intent": "course_enroll | other",
+    "ready_for_api": "boolean",
+    "keyword": "string",
+    "slots": {
+      "course_id": "string | null",
+      "course_name": "string | null",
+      "city": "string | null",
+      "instructor_name": "string | null",
+      "phase_no": "number | null",
+      "time_window_days": "number"
+    },
+    "missing": "string[]",
+    "confidence": "number"
+  }
+}

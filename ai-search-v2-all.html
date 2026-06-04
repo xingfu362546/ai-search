@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 超级搜索 · V2 全部 Tab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-workbench: #e8e6e3;
+      --page-bg: #ededed;
+      --surface: #faf9f7;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --text-2: #6b6b6b;
+      --text-3: #9a9a9a;
+      --accent: #ff7a45;
+      --accent-soft: rgba(255, 122, 69, 0.12);
+      --line: #e8e8e8;
+      --shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+      --r-md: 12px;
+      --r-lg: 16px;
+      --r-xl: 20px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+      background: var(--bg-workbench);
+      min-height: 100vh;
+    }
+
+    .workbench {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+      padding: 24px 16px 48px;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .phone-label { text-align: center; font-size: 13px; font-weight: 600; color: var(--text-2); margin-bottom: 10px; }
+
+    .phone {
+      width: 390px;
+      height: 780px;
+      background: var(--page-bg);
+      border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .status-spacer { height: 12px; flex-shrink: 0; }
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      padding: 6px 10px 8px;
+      gap: 6px;
+      flex-shrink: 0;
+      background: var(--page-bg);
+    }
+
+    .nav-back { width: 40px; border: none; background: transparent; font-size: 22px; cursor: pointer; }
+    .search-bar-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: var(--r-xl);
+      padding: 0 12px;
+      height: 36px;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .search-bar-wrap input { flex: 1; border: none; outline: none; font-size: 14px; }
+    .search-bar-wrap input::placeholder { color: var(--accent); }
+    .nav-cap {
+      width: 82px; height: 30px; border-radius: 18px;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: rgba(255,255,255,0.7);
+    }
+
+    .tabs-scroll {
+      display: flex;
+      overflow-x: auto;
+      padding: 0 6px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+      scrollbar-width: none;
+    }
+    .tabs-scroll::-webkit-scrollbar { display: none; }
+
+    .tab {
+      flex-shrink: 0;
+      padding: 12px 12px;
+      font-size: 13px;
+      color: var(--text-2);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+    }
+    .tab.active { color: var(--text); font-weight: 600; }
+    .tab.active::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+    .tab.ai-tab.active { color: var(--accent); background: var(--accent-soft); }
+    .tab.ai-tab.active::after { display: none; }
+
+    .panel { display: none; flex: 1; overflow-y: auto; min-height: 0; }
+    .panel.active { display: block; }
+
+    /* 全部 · 分区瀑布 */
+    .all-body { padding: 12px 14px 24px; background: var(--surface); }
+
+    .section { margin-bottom: 20px; }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .section-head h3 { font-size: 15px; font-weight: 700; }
+    .section-head a { font-size: 12px; color: var(--accent); text-decoration: none; }
+
+    /* 课程期数简卡 */
+    .mini-session {
+      background: #f2f2f2;
+      border-radius: var(--r-md);
+      padding: 10px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    /* 图4 线上 */
+    .online-card {
+      background: #f5f5f5;
+      border-radius: var(--r-md);
+      overflow: hidden;
+    }
+    .online-card .thumb {
+      height: 120px;
+      background: linear-gradient(135deg, #ff9a56, #ff6b35);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .online-card .thumb .badge {
+      position: absolute;
+      left: 8px; bottom: 8px;
+      background: rgba(0,0,0,0.45);
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .online-card .info { padding: 10px; font-size: 13px; }
+    .online-card .meta { display: flex; justify-content: space-between; margin-top: 6px; }
+    .online-card .price { color: #e53935; font-weight: 600; }
+
+    /* 图5 商城 */
+    .mall-card {
+      display: flex;
+      gap: 12px;
+      background: #f5f5f5;
+      border-radius: var(--r-md);
+      padding: 12px;
+      align-items: center;
+    }
+    .mall-thumb {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      background: linear-gradient(145deg, #ffb6c1, #ff8fab);
+      flex-shrink: 0;
+      font-size: 10px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4px;
+    }
+    .mall-info { flex: 1; }
+    .mall-info .title { font-size: 14px; margin-bottom: 8px; }
+    .mall-price { color: #e53935; font-weight: 700; font-size: 15px; }
+    .mall-old { color: var(--text-3); text-decoration: line-through; font-size: 12px; margin-left: 6px; }
+
+    /* 图6 文章 */
+    .article-card {
+      display: flex;
+      gap: 10px;
+      background: #f5f5f5;
+      border-radius: var(--r-md);
+      padding: 10px;
+    }
+    .article-thumb {
+      width: 100px;
+      height: 72px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #a8e063, #56ab2f);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .article-thumb .type {
+      position: absolute;
+      right: 4px; bottom: 4px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .article-info .title { font-size: 14px; font-weight: 600; line-height: 1.35; }
+    .article-info .desc { font-size: 12px; color: var(--text-3); margin-top: 6px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* 图7 视频 */
+    .video-card { margin-bottom: 4px; }
+    .video-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .video-badge { background: var(--accent); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 500; }
+    .video-thumb {
+      height: 160px;
+      background: #e0e0e0;
+      border-radius: var(--r-md);
+      position: relative;
+    }
+    .video-thumb .views {
+      position: absolute;
+      left: 10px; bottom: 10px;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+    .video-thumb .dur {
+      position: absolute;
+      right: 10px; bottom: 10px;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* 图8 音频 */
+    .audio-card {
+      display: flex;
+      gap: 12px;
+      background: #f5f5f5;
+      border-radius: var(--r-md);
+      padding: 10px;
+      align-items: center;
+    }
+    .audio-thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f7971e, #ffd200);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .audio-thumb span {
+      position: absolute;
+      right: 4px; bottom: 4px;
+      font-size: 10px;
+      color: #fff;
+      background: rgba(0,0,0,0.4);
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    .audio-info .title { font-size: 14px; font-weight: 500; }
+    .audio-info .plays { font-size: 12px; color: var(--text-3); margin-top: 6px; }
+
+    .spec-panel {
+      max-width: 380px;
+      background: #fff;
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      flex: 1;
+      min-width: 300px;
+    }
+    .spec-panel h1 { font-size: 18px; margin-bottom: 4px; }
+    .spec-panel .ver { font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 14px; }
+    .spec-logic {
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.65;
+      min-height: 100px;
+    }
+    .spec-panel ul { font-size: 13px; color: var(--text-2); padding-left: 18px; line-height: 1.6; }
+    .spec-panel a { color: var(--accent); font-weight: 600; font-size: 13px; display: inline-block; margin-top: 14px; }
+
+    .demo-query {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .demo-query button {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .demo-query button:hover { background: var(--accent-soft); }
+  </style>
+</head>
+<body>
+  <div class="workbench">
+    <div>
+      <div class="phone-label">V2 · 全部 Tab 聚合结果</div>
+      <div class="phone">
+        <div class="status-spacer"></div>
+        <div class="nav-bar">
+          <button type="button" class="nav-back" onclick="history.back()">‹</button>
+          <div class="search-bar-wrap">
+            <input type="search" id="searchInput" value="恋爱咨询" placeholder="搜索你想要的内容" />
+          </div>
+          <div class="nav-cap"></div>
+        </div>
+
+        <div class="tabs-scroll" id="tabs">
+          <button type="button" class="tab active" data-panel="all">全部</button>
+          <button type="button" class="tab ai-tab" data-panel="ai">✦ AI智搜</button>
+          <button type="button" class="tab" data-panel="online">线上课程</button>
+          <button type="button" class="tab" data-panel="offline">线下课程</button>
+          <button type="button" class="tab" data-panel="mall">6Q商城</button>
+          <button type="button" class="tab" data-panel="camp">领袖营</button>
+          <button type="button" class="tab" data-panel="eq">高EQ</button>
+        </div>
+
+        <!-- 全部：分区瀑布 图1-3区 + 图4-8 -->
+        <div class="panel active all-body" id="panel-all">
+          <section class="section">
+            <div class="section-head"><h3>课程 / 期数</h3><a href="#">查看更多 →</a></div>
+            <div class="mini-session">第533期《高EQ智慧父母》一阶（广州站）· 6Q张三 · 08-05 开课</div>
+          </section>
+
+          <section class="section">
+            <div class="section-head"><h3>线上课程类</h3><a href="#" data-goto="online">查看更多 →</a></div>
+            <div class="online-card">
+              <div class="thumb">高效亲子沟通指南<span class="badge">专栏</span></div>
+              <div class="info">
+                <div>会长第 333期 线上恋爱咨询话题专栏</div>
+                <div class="meta"><span class="price">免费</span><span style="color:#9a9a9a">2333人已学习</span></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head"><h3>6Q商城</h3><a href="#" data-goto="mall">查看更多 →</a></div>
+            <div class="mall-card">
+              <div class="mall-thumb">6Q潮玩盲盒</div>
+              <div class="mall-info">
+                <div class="title">【EQ】恋爱咨询公仔</div>
+                <div><span class="mall-price">¥ 55.00</span><span class="mall-old">¥ 88.00</span></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head"><h3>相关文章</h3><a href="#">查看更多 →</a></div>
+            <div class="article-card">
+              <div class="article-thumb"><span class="type">文章</span></div>
+              <div class="article-info">
+                <div class="title">恋爱咨询是否为骗局</div>
+                <div class="desc">恋爱咨询是干嘛的恋爱咨询是干嘛的恋…</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head"><h3>视频</h3><a href="#">查看更多 →</a></div>
+            <div class="video-card">
+              <div class="video-title">这是一个视频的标题这是一个视频的标题 <span class="video-badge">试看</span></div>
+              <div class="video-thumb">
+                <span class="views">1.2万次播</span>
+                <span class="dur">09:22</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head"><h3>音频</h3><a href="#">查看更多 →</a></div>
+            <div class="audio-card">
+              <div class="audio-thumb"><span>音频</span></div>
+              <div class="audio-info">
+                <div class="title">恋爱咨询专题采访</div>
+                <div class="plays">2.7万人听过</div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="panel" id="panel-ai" style="padding:24px;text-align:center;color:#888;font-size:14px;">
+          AI智搜 交互同 <a href="ai-search-v1.html" style="color:#ff7a45">V1 文件</a>（课程/期数意图专用，不出图4-8）
+        </div>
+        <div class="panel" id="panel-online" style="padding:24px;text-align:center;color:#888;font-size:14px;">线上课程列表页（同 V1 图4 单列）</div>
+        <div class="panel" id="panel-offline" style="padding:24px;text-align:center;color:#888;font-size:14px;">线下课程（独立类型，不与线上共用卡片）</div>
+        <div class="panel" id="panel-mall" style="padding:24px;text-align:center;color:#888;font-size:14px;">6Q商城列表</div>
+        <div class="panel" id="panel-camp" style="padding:24px;text-align:center;color:#888;font-size:14px;">领袖营</div>
+        <div class="panel" id="panel-eq" style="padding:24px;text-align:center;color:#888;font-size:14px;">高EQ</div>
+      </div>
+    </div>
+
+    <aside class="spec-panel">
+      <h1>AI 超级搜索</h1>
+      <p class="ver">全部 Tab 瀑布 UI 参考页</p>
+      <a class="doc-entry" href="ai-search-dify-architecture-draft.html" target="_blank" rel="noopener" style="display:block;margin:12px 0 16px;padding:10px 14px;background:rgba(255,122,69,.12);border:1px solid rgba(255,122,69,.25);border-radius:12px;text-align:center;text-decoration:none;color:#ff7a45;font-size:13px;font-weight:600">
+        查看技术方案 v5
+      </a>
+      <div class="spec-logic" id="specLogic">
+        演示「全部 Tab」多类型分区瀑布。完整交互见
+        <a href="ai-search-v1.html" style="color:#ff7a45">ai-search-v1.html</a>；
+        技术方案见
+        <a href="ai-search-dify-architecture-draft.html" style="color:#ff7a45">意图识别技术方案 v5</a>。
+      </div>
+      <ul>
+        <li>首次搜索：课程/期数 → V1 的 AI智搜；其余 → 全部 Tab</li>
+        <li>泛搜「恋爱咨询」→ 适合演示本页全部混排</li>
+      </ul>
+      <div class="demo-query">
+        <button type="button" onclick="document.getElementById('searchInput').value='恋爱咨询'; switchTab('all')">演示：恋爱咨询 → 全部聚合</button>
+        <button type="button" onclick="switchTab('online')">跳转：线上课程 Tab</button>
+      </div>
+      <a href="ai-search-v1.html">← 返回 V1 原型</a>
+    </aside>
+  </div>
+
+  <script>
+    const specLogic = document.getElementById("specLogic");
+    const tabs = document.querySelectorAll("#tabs .tab");
+    const panels = document.querySelectorAll(".panel");
+
+    function switchTab(name) {
+      tabs.forEach(t => t.classList.toggle("active", t.dataset.panel === name));
+      panels.forEach(p => p.classList.toggle("active", p.id === "panel-" + name));
+      const notes = {
+        all: "【全部】并行请求各垂类 API，按相关度排序区块顺序；区块内限额 N=1~3。",
+        ai: "【AI智搜】与 V1 相同，不嵌入商城/文章卡片。",
+        online: "【线上课程】仅图4样式列表；与线下课 API 分离。",
+        mall: "【6Q商城】仅图5样式。"
+      };
+      specLogic.innerHTML = notes[name] || "";
+    }
+
+    tabs.forEach(t => t.addEventListener("click", () => switchTab(t.dataset.panel)));
+    document.querySelectorAll("[data-goto]").forEach(a => {
+      a.addEventListener("click", e => {
+        e.preventDefault();
+        switchTab(a.dataset.goto);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{
+  "$schema": "entity-dictionary-v5",
+  "description": "实体词典示例 · 同步到 Dify 知识库或 BFF 配置表",
+  "courses": [
+    {
+      "course_id": "c_wisdom_parents_l1",
+      "standard_name": "智慧父母一阶",
+      "aliases": ["一阶", "父母课", "智慧父母", "WFM L1", "高EQ智慧父母一阶"]
+    },
+    {
+      "course_id": "c_wisdom_parents_l2",
+      "standard_name": "智慧父母二阶",
+      "aliases": ["二阶", "父母二阶"]
+    },
+    {
+      "course_id": "c_leader_camp",
+      "standard_name": "领袖营",
+      "aliases": ["青少年领袖营", "6Q领袖营"]
+    },
+    {
+      "course_id": "c_higheq_workshop",
+      "standard_name": "高EQ工作坊",
+      "aliases": ["工作坊", "高EQ"]
+    }
+  ],
+  "cities": [
+    { "standard": "广州", "aliases": ["广州站", "羊城"] },
+    { "standard": "南宁", "aliases": ["南宁站", "邕"] },
+    { "standard": "深圳", "aliases": ["深圳站"] },
+    { "standard": "北京", "aliases": ["北京站"] },
+    { "standard": "上海", "aliases": ["上海站"] }
+  ],
+  "instructors": [
+    {
+      "instructor_id": "ins_zhangsan",
+      "standard_name": "6Q张三",
+      "aliases": ["张三", "张老师"]
+    },
+    {
+      "instructor_id": "ins_chief",
+      "standard_name": "总导师",
+      "aliases": ["首席导师", "总导师课程"],
+      "note": "若业务上「总导师」指多人，BFF 需特殊规则或返回多课程列表"
+    }
+  ],
+  "not_course_enroll_hints": [
+    "盲盒", "潮玩", "公仔", "商城", "音频", "视频", "文章", "专栏", "网课", "恋爱咨询"
+  ]
+}

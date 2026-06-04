@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 超级搜索</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --accent: #ff7a45; --bg: #f7f6f3; --text: #1a1a1a; --text-2: #666; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Noto Sans SC", sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .hub {
+      max-width: 420px;
+      width: 100%;
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px 28px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    h1 { font-size: 22px; margin-bottom: 6px; }
+    p.lead { font-size: 14px; color: var(--text-2); margin-bottom: 24px; line-height: 1.6; }
+    .links { display: flex; flex-direction: column; gap: 12px; }
+    a.card {
+      display: block;
+      padding: 16px 18px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    a.card:hover { border-color: var(--accent); background: rgba(255,122,69,0.06); }
+    a.card.primary { border-color: rgba(255,122,69,0.35); background: rgba(255,122,69,0.08); }
+    a.card strong { display: block; font-size: 15px; margin-bottom: 4px; }
+    a.card span { font-size: 13px; color: var(--text-2); }
+  </style>
+</head>
+<body>
+  <div class="hub">
+    <h1>AI 超级搜索</h1>
+    <p class="lead">6Q APP 搜索迭代：交互原型与技术方案。</p>
+    <div class="links">
+      <a class="card primary" href="ai-search-v1.html">
+        <strong>交互原型</strong>
+        <span>全部 Tab · AI 智搜 · 期数卡片</span>
+      </a>
+      <a class="card" href="ai-search-dify-architecture-draft.html">
+        <strong>技术方案 v5</strong>
+        <span>意图识别 · 字段抽取 · 期数检索</span>
+      </a>
+      <a class="card" href="ai-search-v2-all.html">
+        <strong>全部 Tab 参考页</strong>
+        <span>多类型分区瀑布 UI</span>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

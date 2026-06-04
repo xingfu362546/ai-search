@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 超级搜索 · V1 原型</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-workbench: #e8e6e3;
+      --page-bg: #ededed;
+      --surface: #faf9f7;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --text-2: #6b6b6b;
+      --text-3: #9a9a9a;
+      --accent: #ff7a45;
+      --accent-soft: rgba(255, 122, 69, 0.12);
+      --accent-border: rgba(255, 122, 69, 0.35);
+      --line: #e8e8e8;
+      --shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --r-xl: 20px;
+      --r-pill: 999px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --spec-w: 380px;
+      --gap-search-tabs: 14px;
+      --search-header-pad-x: 12px;
+      --search-header-pad-bottom: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+      background: var(--bg-workbench);
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    .workbench {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 32px;
+      padding: 24px 16px 48px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .phone-wrap {
+      flex: 0 0 auto;
+      width: 390px;
+    }
+
+    .phone-label {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+      margin-bottom: 10px;
+    }
+
+    .phone {
+      width: 390px;
+      height: 780px;
+      max-height: 85vh;
+      background: var(--page-bg);
+      border-radius: 28px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    .screen.active { display: flex; }
+
+    .status-spacer { height: 12px; flex-shrink: 0; background: var(--page-bg); }
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      padding: 6px 10px 8px;
+      background: var(--page-bg);
+      flex-shrink: 0;
+      gap: 6px;
+    }
+
+    .nav-back {
+      width: 40px;
+      height: 36px;
+      border: none;
+      background: transparent;
+      font-size: 22px;
+      color: var(--text);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .search-bar-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: var(--r-xl);
+      padding: 0 12px;
+      height: 36px;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .search-bar-wrap input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      background: transparent;
+      min-width: 0;
+    }
+
+    .search-bar-wrap input::placeholder { color: var(--accent); opacity: 0.85; }
+
+    .search-icon { color: var(--text-3); margin-right: 6px; font-size: 14px; }
+
+    .nav-cap {
+      width: 56px;
+      height: 26px;
+      border-radius: 13px;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: rgba(255,255,255,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 7px;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .nav-cap-dots {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .nav-cap-dot { width: 3px; height: 3px; border-radius: 50%; background: #333; opacity: 0.72; }
+    .nav-cap-line { width: 1px; height: 11px; background: rgba(0,0,0,0.1); flex-shrink: 0; }
+    .nav-cap-close { width: 5px; height: 5px; border-radius: 50%; border: 1.5px solid #333; opacity: 0.72; flex-shrink: 0; }
+
+    .history-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--text-2);
+    }
+
+    .history-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .history-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #f3f3f3;
+      border-radius: var(--r-sm);
+      font-size: 13px;
+      color: var(--text);
+      border: none;
+      cursor: pointer;
+    }
+
+    .history-tag .x { color: var(--text-3); font-size: 12px; }
+
+    /* —— 搜索展开态（三屏通用） —— */
+    .search-header {
+      flex-shrink: 0;
+      background: var(--page-bg);
+      padding-bottom: var(--search-header-pad-bottom);
+    }
+
+    .search-header + .screen-body {
+      margin-top: 2px;
+    }
+
+    .search-header-nav {
+      display: flex;
+      align-items: flex-start;
+      padding: 10px var(--search-header-pad-x) 4px;
+      gap: 8px;
+    }
+
+    .search-header-nav .nav-back {
+      width: 32px;
+      padding-left: 2px;
+    }
+
+    .search-zone {
+      flex: 1;
+      min-width: 0;
+      width: 0;
+    }
+
+    .search-zone .search-bar-collapsed,
+    .search-zone .search-panel-expanded {
+      width: 100%;
+    }
+
+    .search-bar-collapsed {
+      cursor: text;
+      margin-bottom: 2px;
+    }
+
+    .search-panel-expanded {
+      display: none;
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 122, 69, 0.22);
+      box-shadow: 0 2px 10px rgba(255, 122, 69, 0.08);
+      padding: 8px 10px 10px;
+      margin-bottom: 4px;
+      overflow: hidden;
+    }
+
+    .screen.is-search-expanded .search-bar-collapsed { display: none !important; }
+    .screen.is-search-expanded .search-panel-expanded { display: block; }
+
+    .search-input-box {
+      position: relative;
+      padding-right: 4px;
+    }
+
+    .search-panel-input {
+      display: block;
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 22px;
+      height: 22px;
+      max-height: 66px;
+      padding: 6px 26px 6px 2px;
+      resize: none;
+      font-family: inherit;
+      color: var(--text);
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .search-panel-input::placeholder { color: var(--text-3); font-size: 14px; }
+
+    .btn-clear-input {
+      position: absolute;
+      right: 0;
+      top: 8px;
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: #c8c8c8;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .search-panel-expanded.has-text .btn-clear-input {
+      display: inline-flex;
+    }
+
+    .screen-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .search-aux-panel {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 8px 16px 16px;
+      background: #fff;
+    }
+
+    .screen.is-search-expanded .search-header {
+      padding-bottom: 8px;
+    }
+
+    .screen.is-search-expanded .screen-main { display: none !important; }
+    .screen:not(.is-search-expanded) .search-aux-panel { display: none !important; }
+
+    .screen-main {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #screen-entry .screen-main { background: #fff; }
+    #screen-entry:not(.is-search-expanded) .screen-main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 16px 24px;
+    }
+
+    .btn-clear-input:hover {
+      color: var(--text-2);
+      background: #f5f5f5;
+    }
+
+    .btn-clear-input svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+    }
+
+    .search-panel-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #f0f0f0;
+      gap: 8px;
+    }
+
+    .ai-switch-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .ai-switch-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: var(--r-pill);
+      background: var(--accent-soft);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .ai-switch-pill .spark { font-size: 11px; }
+
+    .ai-switch-input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .ai-switch-track {
+      background: #e5e5e5;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .ai-switch-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+
+    .ai-switch-input:checked + .ai-switch-track {
+      background: var(--accent);
+    }
+
+    .btn-search-submit {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 1px 6px rgba(255, 122, 69, 0.3);
+    }
+
+    .btn-search-submit svg { width: 16px; height: 16px; }
+
+    .ai-switch-track {
+      width: 40px;
+      height: 24px;
+      border-radius: 12px;
+    }
+
+    .ai-switch-track::after {
+      width: 18px;
+      height: 18px;
+    }
+
+    .ai-switch-input:checked + .ai-switch-track::after {
+      transform: translateX(16px);
+    }
+
+    .opening-section { margin-top: 4px; }
+
+    .opening-loading {
+      padding: 20px 0;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-3);
+    }
+
+    .opening-list { list-style: none; }
+
+    .opening-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 0;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      background: transparent;
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .opening-item:last-child { border-bottom: none; }
+
+    .opening-item:active { background: var(--accent-soft); }
+
+    .opening-spark {
+      flex-shrink: 0;
+      color: var(--accent);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .opening-text .hl {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .screen:not(.is-search-expanded) .opening-section { display: none; }
+    .screen.is-search-expanded.ai-off .opening-section { display: none; }
+
+    .opening-section + .history-section {
+      margin-top: 4px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    /* —— Tabs —— */
+    .tabs-wrap {
+      flex-shrink: 0;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding-top: var(--gap-search-tabs);
+      margin-top: 4px;
+    }
+
+    .screen-main > .tabs-wrap:first-child {
+      margin-top: 0;
+      padding-top: var(--gap-search-tabs);
+    }
+
+    .tabs-scroll {
+      display: flex;
+      overflow-x: auto;
+      padding: 2px 12px 0;
+      scrollbar-width: none;
+    }
+    .tabs-scroll::-webkit-scrollbar { display: none; }
+
+    .tab {
+      flex-shrink: 0;
+      padding: 10px 14px 14px;
+      font-size: 14px;
+      color: var(--text-2);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+    }
+
+    .tab.active { color: var(--text); font-weight: 600; }
+
+    .tab.active::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .tab.ai-tab.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: var(--r-sm) var(--r-sm) 0 0;
+      margin-top: 4px;
+    }
+
+    .tab.ai-tab.active::after { display: none; }
+
+    .filter-row {
+      display: flex;
+      justify-content: flex-end;
+      padding: 12px 16px;
+      background: #fff;
+      flex-shrink: 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .filter-btn {
+      font-size: 13px;
+      color: var(--text-2);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    /* —— Results body —— */
+    #screen-results .screen-main,
+    #screen-ai .screen-main {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+
+    #screen-ai .screen-main .ai-main {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .results-body {
+      flex: 1;
+      overflow-y: auto;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      color: var(--text-3);
+      font-size: 14px;
+    }
+
+    .empty-illus {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffe8d6, #fff5eb);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+
+    .online-card {
+      background: #f5f5f5;
+      border-radius: var(--r-md);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .online-card .thumb {
+      height: 140px;
+      background: linear-gradient(135deg, #ff9a56, #ff6b35);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .online-card .thumb .badge {
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      background: rgba(0,0,0,0.45);
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .online-card .info { padding: 12px; }
+    .online-card .title { font-size: 14px; margin-bottom: 8px; line-height: 1.4; }
+    .online-card .meta { display: flex; justify-content: space-between; font-size: 13px; }
+    .online-card .price { color: #e53935; font-weight: 600; }
+    .online-card .learned { color: var(--text-3); }
+
+    /* —— 全部 Tab 聚合 —— */
+    .results-panels {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .results-panel {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .results-panel.active { display: block; }
+
+    .tab-panel-all {
+      background: var(--surface);
+      padding: 12px 14px 24px;
+    }
+
+    .all-keyword {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-bottom: 14px;
+    }
+
+    .section { margin-bottom: 18px; }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .section-head h3 { font-size: 15px; font-weight: 700; color: var(--text); }
+    .section-head span { font-size: 12px; color: var(--text-3); }
+
+    .mini-session {
+      background: #f2f2f2;
+      border-radius: var(--r-md);
+      padding: 10px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .mall-card {
+      display: flex;
+      gap: 12px;
+      background: #f5f5f5;
+      border-radius: var(--r-md);
+      padding: 12px;
+      align-items: center;
+    }
+    .mall-thumb {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      background: linear-gradient(145deg, #ffb6c1, #ff8fab);
+      flex-shrink: 0;
+      font-size: 10px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .mall-info .title { font-size: 14px; margin-bottom: 6px; }
+    .mall-price { color: #e53935; font-weight: 700; }
+    .mall-old { color: var(--text-3); text-decoration: line-through; font-size: 12px; margin-left: 6px; }
+
+    .article-card {
+      display: flex;
+      gap: 10px;
+      background: #f5f5f5;
+      border-radius: var(--r-md);
+      padding: 10px;
+    }
+    .article-thumb {
+      width: 100px;
+      height: 72px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #a8e063, #56ab2f);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .article-thumb .type {
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .article-info .title { font-size: 14px; font-weight: 600; line-height: 1.35; }
+    .article-info .desc { font-size: 12px; color: var(--text-3); margin-top: 6px; }
+
+    .video-block .video-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .video-badge { font-size: 10px; background: var(--accent); color: #fff; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
+    .video-thumb {
+      height: 140px;
+      background: #e8e8e8;
+      border-radius: var(--r-md);
+      position: relative;
+    }
+    .video-thumb .views, .video-thumb .dur {
+      position: absolute;
+      bottom: 10px;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+    .video-thumb .views { left: 10px; }
+    .video-thumb .dur { right: 10px; border-radius: 4px; }
+
+    .audio-card {
+      display: flex;
+      gap: 12px;
+      background: #f5f5f5;
+      border-radius: var(--r-md);
+      padding: 10px;
+      align-items: center;
+    }
+    .audio-thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f7971e, #ffd200);
+      flex-shrink: 0;
+    }
+    .audio-info .title { font-size: 14px; }
+    .audio-info .plays { font-size: 12px; color: var(--text-3); margin-top: 6px; }
+
+    .tab-category-body {
+      padding: 12px 14px 24px;
+      background: var(--surface);
+    }
+
+    .tab-category-keyword {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-bottom: 12px;
+    }
+
+    .tab-category-empty {
+      padding: 48px 16px;
+      text-align: center;
+      color: var(--text-3);
+      font-size: 14px;
+    }
+
+    .tab-category-empty .empty-illus {
+      font-size: 40px;
+      margin-bottom: 8px;
+    }
+
+    /* —— AI Chat —— */
+    .ai-main {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .ai-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 12px 14px 20px;
+      background: var(--surface);
+    }
+
+    .chat-turn {
+      margin-bottom: 20px;
+      clear: both;
+    }
+
+    .chat-turn:last-child { margin-bottom: 8px; }
+
+    .user-bubble {
+      display: inline-block;
+      max-width: 92%;
+      background: var(--card);
+      padding: 10px 14px;
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow);
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      line-height: 1.45;
+    }
+
+    .ai-card {
+      background: var(--card);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    .ai-card .session-list:last-child { margin-bottom: 0; }
+
+    .ai-card p { margin-bottom: 10px; }
+    .ai-card p:last-child { margin-bottom: 0; }
+
+    .ai-card .course-title {
+      font-weight: 700;
+      font-size: 15px;
+      margin: 8px 0;
+    }
+
+    .ai-card .highlight-label {
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .ai-card .xiaq {
+      color: var(--text-2);
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .ai-card .numbered { padding-left: 0; list-style: none; }
+    .ai-card .numbered li { margin-bottom: 12px; }
+    .ai-card .numbered strong { display: block; margin-bottom: 4px; }
+    .ai-card .stat { font-size: 13px; color: var(--text-2); }
+
+    .session-list { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+    .session-item {
+      background: #f2f2f2;
+      border-radius: var(--r-md);
+      overflow: hidden;
+    }
+
+    .session-top {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      align-items: center;
+    }
+
+    .session-thumb {
+      width: 72px;
+      height: 56px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #ff8c42, #e85d04);
+      flex-shrink: 0;
+      position: relative;
+      font-size: 9px;
+      color: #fff;
+      padding: 4px;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .session-thumb .loc {
+      background: rgba(0,0,0,0.5);
+      padding: 1px 4px;
+      border-radius: 2px;
+      font-size: 9px;
+    }
+
+    .session-info { flex: 1; min-width: 0; }
+    .session-info .name { font-size: 13px; font-weight: 600; line-height: 1.35; }
+    .session-info .teacher { font-size: 12px; color: var(--text-2); margin-top: 4px; }
+
+    .session-enroll {
+      flex-shrink: 0;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 0;
+      margin-left: 4px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .session-enroll-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(255, 107, 53, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      transition: background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .session-enroll-icon svg {
+      width: 15px;
+      height: 15px;
+      display: block;
+    }
+
+    .session-enroll:hover .session-enroll-icon {
+      background: #ff6630;
+      box-shadow: 0 2px 6px rgba(255, 107, 53, 0.35);
+    }
+
+    .session-enroll:active .session-enroll-icon {
+      box-shadow: 0 1px 3px rgba(255, 107, 53, 0.25);
+    }
+
+    .session-enroll-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-2);
+      line-height: 1;
+      transform: scale(0.95);
+    }
+
+    .session-time {
+      padding: 8px 10px;
+      font-size: 12px;
+      color: var(--text-2);
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .unsupported-box {
+      padding: 4px 0 8px;
+      text-align: left;
+    }
+
+    .unsupported-box > p {
+      color: var(--text-2);
+      margin-bottom: 12px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .unsupported-hint {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      text-align: left;
+    }
+
+    .chat-capsule-scroll {
+      width: 100%;
+    }
+
+    .redirect-tags {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .redirect-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: auto;
+      max-width: 100%;
+      padding: 8px 14px;
+      font-size: 13px;
+      line-height: 1.35;
+      color: var(--text);
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 999px;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+
+    .redirect-tag::before {
+      content: "✦";
+      color: #4a7fd4;
+      font-size: 12px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .redirect-tag:active {
+      background: #fafafa;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .redirect-tag.suggested {
+      border-color: var(--accent-border);
+      box-shadow: 0 2px 10px rgba(255, 122, 69, 0.15);
+    }
+
+    .ai-footer {
+      flex: 0 0 auto;
+      flex-shrink: 0;
+      background: #fff;
+      border-top: 1px solid var(--line);
+      padding: 12px 12px calc(12px + var(--safe-bottom));
+      box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.06);
+      z-index: 2;
+    }
+
+    .ai-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r-xl);
+      padding: 6px 6px 6px 14px;
+      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .ai-input-wrap input {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      padding: 8px 0;
+      background: transparent;
+    }
+
+    .ai-input-wrap button.send {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .disclaimer {
+      text-align: center;
+      font-size: 10px;
+      color: var(--text-3);
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    /* —— Spec panel —— */
+    .spec-panel {
+      width: 100%;
+      max-width: var(--spec-w);
+      background: var(--card);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .spec-panel h1 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .spec-panel .version {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .spec-panel h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 16px 0 8px;
+      color: var(--text);
+    }
+
+    .spec-panel p, .spec-panel li {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-2);
+    }
+
+    .spec-panel ul { padding-left: 18px; margin-bottom: 12px; }
+
+    .spec-logic {
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      padding: 12px 14px;
+      border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text);
+      min-height: 120px;
+    }
+
+    .spec-logic code {
+      font-size: 12px;
+      background: var(--accent-soft);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #c44d1a;
+    }
+
+    .demo-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .demo-btns button {
+      text-align: left;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-sm);
+      background: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      line-height: 1.4;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .demo-btns button:hover {
+      border-color: var(--accent-border);
+      background: var(--accent-soft);
+    }
+
+    .demo-btns button strong {
+      display: block;
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .flow-diagram {
+      font-size: 11px;
+      font-family: ui-monospace, monospace;
+      background: #f5f5f5;
+      padding: 12px;
+      border-radius: var(--r-sm);
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+
+    .link-v2 {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .doc-entry {
+      display: block;
+      margin: 12px 0 16px;
+      padding: 10px 14px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(255, 122, 69, 0.25);
+      border-radius: var(--r-md);
+      text-align: center;
+      text-decoration: none;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+
+    .doc-entry:hover {
+      background: rgba(255, 122, 69, 0.2);
+    }
+
+    .doc-entry span {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-3);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 860px) {
+      .workbench { flex-direction: column; align-items: center; }
+      .spec-panel { max-width: 390px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="workbench">
+    <div class="phone-wrap">
+      <div class="phone-label" id="screenLabel">屏 1 · 搜索入口</div>
+      <div class="phone" id="phone">
+        <!-- 屏1：搜索入口 -->
+        <div class="screen active" id="screen-entry" data-screen="entry">
+          <div class="status-spacer"></div>
+          <div class="search-header">
+            <div class="search-header-nav">
+              <button type="button" class="nav-back search-back-btn" aria-label="返回">‹</button>
+              <div class="search-zone">
+                <div class="search-bar-wrap search-bar-collapsed">
+                  <span class="search-icon">⌕</span>
+                  <input type="search" class="search-input-collapsed" placeholder="搜索你想要的内容" readonly />
+                </div>
+                <div class="search-panel-expanded">
+                  <div class="search-input-box">
+                    <textarea class="search-panel-input" rows="1" placeholder="搜索你想要的内容" autocomplete="off" spellcheck="false"></textarea>
+                    <button type="button" class="btn-clear-input" title="清空" aria-label="清空">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                  </div>
+                  <div class="search-panel-toolbar">
+                    <label class="ai-switch-wrap">
+                      <span class="ai-switch-pill"><span class="spark">✦</span> AI智搜</span>
+                      <input type="checkbox" class="ai-switch-input" checked />
+                      <span class="ai-switch-track" aria-hidden="true"></span>
+                    </label>
+                    <button type="button" class="btn-search-submit" aria-label="搜索">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="nav-cap" aria-hidden="true">
+                <span class="nav-cap-dots"><span class="nav-cap-dot"></span><span class="nav-cap-dot"></span><span class="nav-cap-dot"></span></span>
+                <span class="nav-cap-line"></span>
+                <span class="nav-cap-close"></span>
+              </div>
+            </div>
+          </div>
+          <div class="screen-body">
+            <div class="search-aux-panel">
+              <div class="opening-section">
+                <ul class="opening-list"></ul>
+                <div class="opening-loading" style="display:none">加载推荐提问中…</div>
+              </div>
+              <div class="history-section">
+                <div class="history-head">
+                  <span>历史搜索</span>
+                  <button type="button" class="btn-clear-history" title="清空历史">🗑</button>
+                </div>
+                <div class="history-tags">
+                  <button type="button" class="history-tag" data-query="智慧父母一阶课程">一阶 <span class="x">×</span></button>
+                  <button type="button" class="history-tag" data-query="6Q">6Q <span class="x">×</span></button>
+                  <button type="button" class="history-tag" data-query="音频">音频 <span class="x">×</span></button>
+                </div>
+              </div>
+            </div>
+            <div class="screen-main">
+              <div class="history-section history-section--idle">
+                <div class="history-head">
+                  <span>历史搜索</span>
+                  <button type="button" class="btn-clear-history" title="清空历史">🗑</button>
+                </div>
+                <div class="history-tags">
+                  <button type="button" class="history-tag" data-query="智慧父母一阶课程">一阶 <span class="x">×</span></button>
+                  <button type="button" class="history-tag" data-query="6Q">6Q <span class="x">×</span></button>
+                  <button type="button" class="history-tag" data-query="音频">音频 <span class="x">×</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 屏2/3 共用：结果壳 + Tab -->
+        <div class="screen" id="screen-results" data-screen="results">
+          <div class="status-spacer"></div>
+          <div class="search-header">
+            <div class="search-header-nav">
+              <button type="button" class="nav-back search-back-btn" data-back="entry" aria-label="返回">‹</button>
+              <div class="search-zone">
+                <div class="search-bar-wrap search-bar-collapsed">
+                  <span class="search-icon">⌕</span>
+                  <input type="search" class="search-input-collapsed" placeholder="搜索你想要的内容" readonly />
+                </div>
+                <div class="search-panel-expanded">
+                  <div class="search-input-box">
+                    <textarea class="search-panel-input" rows="1" placeholder="搜索你想要的内容" autocomplete="off" spellcheck="false"></textarea>
+                    <button type="button" class="btn-clear-input" title="清空" aria-label="清空">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                  </div>
+                  <div class="search-panel-toolbar">
+                    <label class="ai-switch-wrap">
+                      <span class="ai-switch-pill"><span class="spark">✦</span> AI智搜</span>
+                      <input type="checkbox" class="ai-switch-input" checked />
+                      <span class="ai-switch-track" aria-hidden="true"></span>
+                    </label>
+                    <button type="button" class="btn-search-submit" aria-label="搜索">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="nav-cap" aria-hidden="true">
+                <span class="nav-cap-dots"><span class="nav-cap-dot"></span><span class="nav-cap-dot"></span><span class="nav-cap-dot"></span></span>
+                <span class="nav-cap-line"></span>
+                <span class="nav-cap-close"></span>
+              </div>
+            </div>
+          </div>
+          <div class="screen-body">
+            <div class="search-aux-panel">
+              <div class="opening-section">
+                <ul class="opening-list"></ul>
+                <div class="opening-loading" style="display:none">加载推荐提问中…</div>
+              </div>
+              <div class="history-section">
+                <div class="history-head">
+                  <span>历史搜索</span>
+                  <button type="button" class="btn-clear-history" title="清空历史">🗑</button>
+                </div>
+                <div class="history-tags">
+                  <button type="button" class="history-tag" data-query="智慧父母一阶课程">一阶 <span class="x">×</span></button>
+                  <button type="button" class="history-tag" data-query="6Q">6Q <span class="x">×</span></button>
+                  <button type="button" class="history-tag" data-query="音频">音频 <span class="x">×</span></button>
+                </div>
+              </div>
+            </div>
+            <div class="screen-main">
+              <div class="tabs-wrap">
+                <div class="tabs-scroll" id="tabsBar">
+                  <button type="button" class="tab active" data-tab="all">全部</button>
+                  <button type="button" class="tab ai-tab" data-tab="ai">✦ AI智搜</button>
+                  <button type="button" class="tab" data-tab="online">线上课程</button>
+                  <button type="button" class="tab" data-tab="offline">线下课程</button>
+                  <button type="button" class="tab" data-tab="mall">6Q商城</button>
+                  <button type="button" class="tab" data-tab="camp">领袖营</button>
+                  <button type="button" class="tab" data-tab="eq">高EQ</button>
+                </div>
+              </div>
+              <div class="filter-row" id="filterRow" style="display:none">
+                <button type="button" class="filter-btn">筛选 ▾</button>
+              </div>
+              <div class="results-panels">
+                <div class="results-panel tab-panel-all active" data-panel="all" id="panel-all"></div>
+                <div class="results-panel results-body" data-panel="online" id="panel-online">
+                  <div class="empty-state" id="onlineEmpty">
+                    <div class="empty-illus">🤔</div>
+                    <span>暂无内容~</span>
+                  </div>
+                  <div id="onlineList" style="display:none"></div>
+                </div>
+                <div class="results-panel tab-category-body" data-panel="offline" id="panel-offline"></div>
+                <div class="results-panel tab-category-body" data-panel="mall" id="panel-mall"></div>
+                <div class="results-panel tab-category-body" data-panel="camp" id="panel-camp"></div>
+                <div class="results-panel tab-category-body" data-panel="eq" id="panel-eq"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI 面板叠在 results 屏内通过 tab 切换显示 -->
+        <div class="screen" id="screen-ai" data-screen="ai">
+          <div class="status-spacer"></div>
+          <div class="search-header">
+            <div class="search-header-nav">
+              <button type="button" class="nav-back search-back-btn" data-back="entry" aria-label="返回">‹</button>
+              <div class="search-zone">
+                <div class="search-bar-wrap search-bar-collapsed">
+                  <span class="search-icon">⌕</span>
+                  <input type="search" class="search-input-collapsed" placeholder="搜索你想要的内容" readonly />
+                </div>
+                <div class="search-panel-expanded">
+                  <div class="search-input-box">
+                    <textarea class="search-panel-input" rows="1" placeholder="搜索你想要的内容" autocomplete="off" spellcheck="false"></textarea>
+                    <button type="button" class="btn-clear-input" title="清空" aria-label="清空">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                  </div>
+                  <div class="search-panel-toolbar">
+                    <label class="ai-switch-wrap">
+                      <span class="ai-switch-pill"><span class="spark">✦</span> AI智搜</span>
+                      <input type="checkbox" class="ai-switch-input" checked />
+                      <span class="ai-switch-track" aria-hidden="true"></span>
+                    </label>
+                    <button type="button" class="btn-search-submit" aria-label="搜索">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="nav-cap" aria-hidden="true">
+                <span class="nav-cap-dots"><span class="nav-cap-dot"></span><span class="nav-cap-dot"></span><span class="nav-cap-dot"></span></span>
+                <span class="nav-cap-line"></span>
+                <span class="nav-cap-close"></span>
+              </div>
+            </div>
+          </div>
+          <div class="screen-body">
+            <div class="search-aux-panel">
+              <div class="opening-section">
+                <ul class="opening-list"></ul>
+                <div class="opening-loading" style="display:none">加载推荐提问中…</div>
+              </div>
+              <div class="history-section">
+                <div class="history-head">
+                  <span>历史搜索</span>
+                  <button type="button" class="btn-clear-history" title="清空历史">🗑</button>
+                </div>
+                <div class="history-tags">
+                  <button type="button" class="history-tag" data-query="智慧父母一阶课程">一阶 <span class="x">×</span></button>
+                  <button type="button" class="history-tag" data-query="6Q">6Q <span class="x">×</span></button>
+                  <button type="button" class="history-tag" data-query="音频">音频 <span class="x">×</span></button>
+                </div>
+              </div>
+            </div>
+            <div class="screen-main">
+              <div class="tabs-wrap">
+                <div class="tabs-scroll" id="tabsBarAi">
+                  <button type="button" class="tab" data-tab="all">全部</button>
+                  <button type="button" class="tab ai-tab active" data-tab="ai">✦ AI智搜</button>
+                  <button type="button" class="tab" data-tab="online">线上课程</button>
+                  <button type="button" class="tab" data-tab="offline">线下课程</button>
+                  <button type="button" class="tab" data-tab="mall">6Q商城</button>
+                  <button type="button" class="tab" data-tab="camp">领袖营</button>
+                  <button type="button" class="tab" data-tab="eq">高EQ</button>
+                </div>
+              </div>
+              <div class="ai-main">
+                <div class="ai-body" id="chatFeed"></div>
+                <div class="ai-footer">
+                  <div class="ai-input-wrap">
+                    <input type="text" id="aiChatInput" placeholder="有什么问题尽管问我" />
+                    <button type="button" class="send" id="aiSendBtn" aria-label="发送">↑</button>
+                  </div>
+                  <p class="disclaimer">内容由 AI 生成 · 报读/课程信息请以详情页为准</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="spec-panel">
+      <h1>AI 超级搜索</h1>
+      <p class="version">交互原型 · 统一版</p>
+      <a class="doc-entry" href="ai-search-dify-architecture-draft.html" target="_blank" rel="noopener">
+        查看技术方案 v5
+        <span>意图识别 · 字段抽取 · 期数 API</span>
+      </a>
+
+      <h2>当前步骤逻辑</h2>
+      <div class="spec-logic" id="specLogic">等待操作…</div>
+
+      <h2>一键演示（5 条）</h2>
+      <div class="demo-btns" id="demoBtns"></div>
+
+      <h2>意图路由（v4）</h2>
+      <ul>
+        <li>首次提交：课程/期数 → AI智搜；其余 → <strong>全部</strong></li>
+        <li>切 Tab：只刷类目，<strong>不清</strong> AI 对话</li>
+        <li><strong>仅新关键词提交</strong>时清空对话并轮换 <code>sessionId</code></li>
+        <li>续聊由 Dify + 同一 <code>sessionId</code> 理解上下文（见架构 v4 §2.1 抽象词表）</li>
+      </ul>
+
+      <div class="flow-diagram">新关键词提交 → 可清空 AI
+续聊 / 切 Tab → 保留对话 + sessionId</div>
+    </aside>
+  </div>
+
+  <script>
+    /** 原型 mock：完整词表见架构稿 v4 §2.1 */
+    const ABSTRACT_ONLY = /^(6Q|EQ|六Q|一阶|二阶|三阶|课程|课|学习|培训|最近|哪些|有没有|帮我|查一下|看看|推荐|音频|视频|文章|6Q)$/i;
+    const AI_UNSUPPORTED_IN_CHAT = /盲盒|潮玩|公仔|商城|音频|视频|文章|专栏|网课|试听|¥|买/;
+    const COURSE_STRONG = [
+      "智慧父母一阶", "智慧父母一阶课程", "广州最近有哪些课程正在开课",
+      "总导师的课程有哪些", "南宁站还有吗", "报读", "期数", "开课", "总导师", "授课导师"
+    ];
+
+    function normalizeQuery(q) {
+      return (q || "").trim().replace(/\s+/g, " ");
+    }
+
+    let searchSession = {
+      sessionId: null,
+      anchorQuery: "",
+      turns: []
+    };
+
+    function createSessionId() {
+      return "sess_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7);
+    }
+
+    function isNewKeywordSubmit(query) {
+      const q = normalizeQuery(query);
+      if (!q) return false;
+      if (!searchSession.anchorQuery) return true;
+      return normalizeQuery(searchSession.anchorQuery) !== q;
+    }
+
+    function beginSearchSession(query, { forceNew } = {}) {
+      const q = normalizeQuery(query);
+      if (forceNew || isNewKeywordSubmit(q)) {
+        searchSession.sessionId = createSessionId();
+        searchSession.anchorQuery = q;
+        searchSession.turns = [];
+        return true;
+      }
+      if (!searchSession.sessionId) searchSession.sessionId = createSessionId();
+      return false;
+    }
+
+    function recordTurn(query, role) {
+      searchSession.turns.push({ role, content: normalizeQuery(query), t: Date.now() });
+    }
+
+    function classifyIntent(q, opts = {}) {
+      const t = normalizeQuery(q);
+      if (!t) return "empty";
+      if (opts.inAI && AI_UNSUPPORTED_IN_CHAT.test(t)) return "ai_unsupported";
+      if (ABSTRACT_ONLY.test(t)) return "general_search";
+      if (COURSE_STRONG.some(k => t.includes(k) || k.includes(t))) return "ai_course";
+      if (/智慧父母|高EQ领袖|领袖营.*营|工作坊/.test(t)) return "ai_course";
+      if (/课程|期数|报读|开课|导师/.test(t) && /广州|南宁|深圳|北京|上海|站|第\d+期/.test(t)) return "ai_course";
+      if (opts.inAI && searchSession.turns.length > 0 && /还有吗|名额|报读|排队|这个|那个|继续/.test(t)) return "ai_course";
+      if (/课程|期数|报读|开课|导师/.test(t) && t.length >= 8) return "ai_course";
+      return "general_search";
+    }
+
+    const demos = [
+      { id: 1, label: "智慧父母一阶课程", query: "智慧父母一阶课程", type: "course" },
+      { id: 2, label: "广州最近有哪些课程正在开课？", query: "广州最近有哪些课程正在开课？", type: "course" },
+      { id: 3, label: "总导师的课程有哪些？", query: "总导师的课程有哪些？", type: "course" },
+      { id: 4, label: "6Q潮玩盲盒 → 全部", query: "6Q潮玩盲盒", type: "general" },
+      { id: 5, label: "续聊：南宁站还有吗？", query: "南宁站还有吗？", type: "followup" }
+    ];
+
+    const specLogic = document.getElementById("specLogic");
+    const screenLabel = document.getElementById("screenLabel");
+    const chatFeed = document.getElementById("chatFeed");
+    let lastQuery = "";
+    let globalSearchQuery = "";
+    let aiSearchEnabled = true;
+    let openingFetchTimer = null;
+    let activeSearchScreen = null;
+    const searchScreens = [];
+
+    function getActiveScreenEl() {
+      return document.querySelector(".screen.active") || document.getElementById("screen-entry");
+    }
+
+    function syncAllSearchInputs(value) {
+      globalSearchQuery = value ?? "";
+      document.querySelectorAll(".search-input-collapsed, .search-panel-input").forEach(el => {
+        el.value = globalSearchQuery;
+      });
+      searchScreens.forEach(s => s.updateClearState());
+    }
+
+    function autoResizeSearchInput(el) {
+      el.style.height = "auto";
+      el.style.height = Math.min(el.scrollHeight, 66) + "px";
+    }
+
+    /** 模拟 Dify 工作流返回；上线后替换为真实接口 */
+    async function fetchOpeningPromptsFromDify(keyword) {
+      const kw = (keyword || "").trim();
+      await new Promise(r => setTimeout(r, 280));
+      const base = kw || "课程";
+      return {
+        source: "dify",
+        suggestions: [
+          { id: "1", text: `广州最近有哪些${base}正在开课？`, highlights: [base] },
+          { id: "2", text: `${base}一阶和二阶有什么区别？`, highlights: [base, "一阶", "二阶"] },
+          { id: "3", text: `帮我推荐适合新手的${base}`, highlights: [base] },
+          { id: "4", text: "总导师最近有哪些期数可以报读？", highlights: ["总导师", "期数"] },
+          { id: "5", text: "南宁站还有哪些名额？", highlights: ["南宁站"] }
+        ]
+      };
+    }
+
+    function renderOpeningText(text, highlights) {
+      if (!highlights || !highlights.length) return escapeHtml(text);
+      const words = [...new Set(highlights.filter(Boolean))].sort((a, b) => b.length - a.length);
+      let html = escapeHtml(text);
+      words.forEach(word => {
+        const safe = escapeHtml(word);
+        const re = new RegExp(safe.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+        html = html.replace(re, `<span class="hl">${safe}</span>`);
+      });
+      return html;
+    }
+
+    async function loadOpeningPromptsForScreen(ctx, keyword) {
+      if (!aiSearchEnabled || !ctx.el.classList.contains("is-search-expanded")) return;
+      ctx.openingLoading.style.display = "block";
+      ctx.openingList.innerHTML = "";
+      try {
+        const data = await fetchOpeningPromptsFromDify(keyword);
+        ctx.openingLoading.style.display = "none";
+        ctx.openingList.innerHTML = data.suggestions.map(s => `
+          <li>
+            <button type="button" class="opening-item" data-query="${escapeHtml(s.text)}">
+              <span class="opening-spark">✦</span>
+              <span class="opening-text">${renderOpeningText(s.text, s.highlights)}</span>
+            </button>
+          </li>`).join("");
+        ctx.openingList.querySelectorAll(".opening-item").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const q = btn.dataset.query;
+            syncAllSearchInputs(q);
+            setLogic("entry_opening", `【${ctx.label}】点击开场白 → query=<code>${escapeHtml(q)}</code>`);
+            submitSearchFromScreen(ctx, q);
+          });
+        });
+        setLogic("entry_opening", `【${ctx.label}】Dify 返回 ${data.suggestions.length} 条开场白`);
+      } catch (e) {
+        ctx.openingLoading.style.display = "none";
+        ctx.openingList.innerHTML = `<li style="padding:12px 0;color:#999;font-size:13px">开场白加载失败</li>`;
+      }
+    }
+
+    function collapseSearchOnScreen(ctx) {
+      ctx.el.classList.remove("is-search-expanded");
+      if (activeSearchScreen === ctx) activeSearchScreen = null;
+      syncAllSearchInputs(ctx.inputExpanded.value);
+    }
+
+    function expandSearchOnScreen(ctx) {
+      searchScreens.forEach(s => {
+        if (s !== ctx) s.el.classList.remove("is-search-expanded");
+      });
+      ctx.el.classList.add("is-search-expanded");
+      activeSearchScreen = ctx;
+      ctx.inputExpanded.value = globalSearchQuery;
+      ctx.updateClearState();
+      ctx.inputExpanded.focus();
+      updateScreenAiUi(ctx);
+      const key = ctx.el.id === "screen-entry" ? "entry_expand" : ctx.el.id === "screen-results" ? "results_search_expand" : "ai_search_expand";
+      setLogic(key, `【${ctx.label}】点击搜索框展开`);
+    }
+
+    function updateScreenAiUi(ctx) {
+      ctx.el.classList.toggle("ai-off", !aiSearchEnabled);
+      document.querySelectorAll(".ai-switch-input").forEach(t => { t.checked = aiSearchEnabled; });
+      if (aiSearchEnabled && ctx.el.classList.contains("is-search-expanded")) {
+        loadOpeningPromptsForScreen(ctx, ctx.inputExpanded.value);
+      }
+    }
+
+    function updateAllScreensAiUi() {
+      document.querySelectorAll(".screen").forEach(el => el.classList.toggle("ai-off", !aiSearchEnabled));
+      document.querySelectorAll(".ai-switch-input").forEach(t => { t.checked = aiSearchEnabled; });
+      if (activeSearchScreen?.el.classList.contains("is-search-expanded") && aiSearchEnabled) {
+        loadOpeningPromptsForScreen(activeSearchScreen, activeSearchScreen.inputExpanded.value);
+      }
+    }
+
+    function getQueryFromScreen(ctx) {
+      return ctx.el.classList.contains("is-search-expanded")
+        ? ctx.inputExpanded.value.trim()
+        : ctx.inputCollapsed.value.trim();
+    }
+
+    function submitSearchFromScreen(ctx, query) {
+      const q = (query != null ? query : getQueryFromScreen(ctx)).trim();
+      if (!q) return;
+      syncAllSearchInputs(q);
+      lastQuery = q;
+      collapseSearchOnScreen(ctx);
+      if (!aiSearchEnabled) {
+        setLogic("entry_ai_off", `【${ctx.label}】传统搜索 → 全部 Tab`);
+        openResultsAll(q);
+        return;
+      }
+      setLogic("entry", `【${ctx.label}】AI智搜 开启 → 意图路由`);
+      runSearch(q, { source: "submit" });
+    }
+
+    function initSearchScreen(screenEl) {
+      const label = screenEl.dataset.screen || screenEl.id;
+      const ctx = {
+        el: screenEl,
+        label,
+        inputCollapsed: screenEl.querySelector(".search-input-collapsed"),
+        inputExpanded: screenEl.querySelector(".search-panel-input"),
+        panelExpanded: screenEl.querySelector(".search-panel-expanded"),
+        collapsedWrap: screenEl.querySelector(".search-bar-collapsed"),
+        btnClear: screenEl.querySelector(".btn-clear-input"),
+        btnSearch: screenEl.querySelector(".btn-search-submit"),
+        aiToggle: screenEl.querySelector(".ai-switch-input"),
+        openingList: screenEl.querySelector(".opening-list"),
+        openingLoading: screenEl.querySelector(".opening-loading"),
+        backBtn: screenEl.querySelector(".search-back-btn"),
+        updateClearState() {
+          const has = !!ctx.inputExpanded.value.trim();
+          ctx.panelExpanded.classList.toggle("has-text", has);
+          autoResizeSearchInput(ctx.inputExpanded);
+        }
+      };
+      searchScreens.push(ctx);
+
+      ctx.collapsedWrap.addEventListener("click", () => expandSearchOnScreen(ctx));
+
+      ctx.backBtn.addEventListener("click", () => {
+        if (ctx.el.classList.contains("is-search-expanded")) {
+          collapseSearchOnScreen(ctx);
+          setLogic("entry", `【${ctx.label}】收起搜索`);
+        } else if (ctx.backBtn.dataset.back === "entry") {
+          showScreen("entry");
+          collapseSearchOnScreen(searchScreens.find(s => s.el.id === "screen-entry"));
+          setLogic("entry");
+        } else {
+          setLogic("entry", `【${ctx.label}】返回`);
+        }
+      });
+
+      ctx.btnClear.addEventListener("click", () => {
+        syncAllSearchInputs("");
+        ctx.inputExpanded.focus();
+        if (aiSearchEnabled) loadOpeningPromptsForScreen(ctx, "");
+      });
+
+      ctx.btnSearch.addEventListener("click", () => submitSearchFromScreen(ctx));
+
+      ctx.aiToggle.addEventListener("change", e => {
+        aiSearchEnabled = e.target.checked;
+        updateAllScreensAiUi();
+        setLogic(aiSearchEnabled ? "entry_opening" : "entry_ai_off");
+      });
+
+      ctx.inputExpanded.addEventListener("input", () => {
+        syncAllSearchInputs(ctx.inputExpanded.value);
+        clearTimeout(openingFetchTimer);
+        if (ctx.el.classList.contains("is-search-expanded") && aiSearchEnabled) {
+          openingFetchTimer = setTimeout(() => loadOpeningPromptsForScreen(ctx, ctx.inputExpanded.value), 400);
+        }
+      });
+
+      ctx.inputExpanded.addEventListener("keydown", e => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          submitSearchFromScreen(ctx);
+        }
+      });
+
+      screenEl.addEventListener("click", e => {
+        const tag = e.target.closest(".history-tag");
+        if (!tag || !screenEl.contains(tag) || e.target.classList.contains("x")) return;
+        const q = tag.dataset.query;
+        syncAllSearchInputs(q);
+        if (!ctx.el.classList.contains("is-search-expanded")) expandSearchOnScreen(ctx);
+        setLogic("entry", `【${ctx.label}】点击历史标签`);
+        submitSearchFromScreen(ctx, q);
+      });
+    }
+
+    const logicTexts = {
+      entry: "【屏1·搜索入口】点击搜索框 → 展开；历史标签常显。",
+      entry_expand: "【三屏通用·展开态】大文本框 + AI智搜 开关 + 搜索按钮。",
+      results_search_expand: "【屏2·类目结果】顶部搜索框交互同入口；展开时隐藏 Tab/列表，显示开场白+历史。",
+      ai_search_expand: "【屏3·AI智搜】顶部搜索框可展开改词重搜；展开时隐藏对话区。",
+      entry_opening: "【开场白】AI 开启时请求 Dify；下方展示历史搜索。",
+      entry_ai_off: "【AI 关闭】隐藏开场白；提交走传统类目检索。",
+      results_all: "【屏2·全部】非课程/期数意图 → 激活「全部」Tab，分区瀑布：课程期数 + 线上课 + 商城 + 文章 + 视频 + 音频。",
+      results_online: "【屏2·类目 Tab】切换 Tab 时按搜索框关键词刷新该类目列表；筛选仅类目 Tab 显示。",
+      tab_switch: "【Tab 切换】读取搜索框关键词（展开态优先）→ 刷新当前 Tab 结果；AI Tab 对课程类走智搜，其余提示去全部。",
+      ai_route: "【屏3·AI智搜】意图命中 → 自动切 AI Tab；顶部搜索框回显 query；下方为聊天流。",
+      ai_turn: "【多轮】同一 <code>sessionId</code> + Dify history；底部输入续聊不清空。",
+      unsupported: "【AI 内】垂类/抽象 → 小Q + 去全部；保留上文。",
+      followup: "【续聊】新关键词=false；Dify 读上下文理解「南宁站还有吗」。",
+      new_topic: "【新关键词提交】轮换 sessionId + 清空 AI 对话后重新出卡。"
+    };
+
+    function setLogic(key, extra) {
+      specLogic.innerHTML = (logicTexts[key] || key) + (extra ? "<br><br>" + extra : "");
+    }
+
+    function showScreen(name) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      const el = document.getElementById("screen-" + name);
+      if (el) el.classList.add("active");
+      searchScreens.forEach(s => {
+        if (s.el.id !== "screen-" + name && s.el.classList.contains("is-search-expanded")) {
+          s.el.classList.remove("is-search-expanded");
+        }
+      });
+      activeSearchScreen = searchScreens.find(s => s.el.id === "screen-" + name && s.el.classList.contains("is-search-expanded")) || null;
+      const labels = { entry: "屏 1 · 搜索入口", results: "屏 2 · 结果（默认全部）", ai: "屏 3 · AI智搜" };
+      screenLabel.textContent = labels[name] || name;
+    }
+
+    const enrollBtnHtml = `<button type="button" class="session-enroll" title="报读" aria-label="报读">
+            <span class="session-enroll-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="3.5"/>
+                <path d="M19 11v4M21 13h-4"/>
+              </svg>
+            </span>
+            <span class="session-enroll-label">报读</span>
+          </button>`;
+
+    function sessionCard(data) {
+      return `<div class="session-item">
+        <div class="session-top">
+          <div class="session-thumb"><span class="loc">${data.loc}</span></div>
+          <div class="session-info">
+            <div class="name">${data.name}</div>
+            <div class="teacher">授课导师：${data.teacher}</div>
+          </div>
+          ${enrollBtnHtml}
+        </div>
+        <div class="session-time">开课时间：${data.time}</div>
+      </div>`;
+    }
+
+    function renderFig1() {
+      const cards = [
+        { loc: "南宁站", name: "第533期《高EQ智慧父母》一阶（南宁站）", teacher: "6Q张三", time: "2022-08-05 09:00:00 至 2022-08-07 18:00:00" },
+        { loc: "南宁站", name: "第532期《高EQ智慧父母》一阶（南宁站）", teacher: "6Q张三", time: "2022-08-12 09:00:00 至 2022-08-14 18:00:00" },
+        { loc: "南宁站", name: "第531期《高EQ智慧父母》一阶（南宁站）", teacher: "6Q张三", time: "2022-08-19 09:00:00 至 2022-08-21 18:00:00" }
+      ];
+      return `<div class="ai-card">
+        <p>用户希望寻找有关于 <strong>智慧父母一阶课程</strong> 相关信息。以下是符合要求的信息和报读期数：</p>
+        <p class="course-title">《智慧父母一阶课程》</p>
+        <p class="highlight-label">亮点介绍</p>
+        <p>内在喜悦幸福，外在优雅端庄，从他律到自律帮助孩子从优秀到领袖，解决家庭各种沟通冲突，实现家庭和谐温暖。</p>
+        <p class="xiaq">小Q为你整理了近期（一个月内）的课程期数哦，点击可以直达报读哦</p>
+        <div class="session-list">${cards.map(sessionCard).join("")}</div>
+      </div>`;
+    }
+
+    function renderFig2() {
+      const cards = [
+        { loc: "广州市", name: "第533期《高EQ智慧父母》一阶（广州站）", teacher: "6Q张三", time: "2022-08-05 09:00:00 至 2022-08-07 18:00:00" },
+        { loc: "广州市", name: "第532期《高EQ智慧父母》一阶（广州站）", teacher: "6Q张三", time: "2022-08-12 09:00:00 至 2022-08-14 18:00:00" },
+        { loc: "南宁市", name: "第531期《高EQ智慧父母》一阶（南宁站）", teacher: "6Q张三", time: "2022-08-19 09:00:00 至 2022-08-21 18:00:00" }
+      ];
+      return `<div class="ai-card">
+        <p>🔍 已为你筛选 <strong>[广州市]</strong> 当前可报读/即将开课（未来一个月内）的期数，并按实时报名数据与课程质量智能排序：</p>
+        <ol class="numbered">
+          <li><strong>1. 《智慧父母一阶课程》555期</strong>
+            <span class="stat">开课：2022-08-05 至 2022-08-07 · 广州腾飞大厦A座10楼 · 6Q张三</span>
+            <span class="stat">📈 近7日报读 32 人（+40%） · 🔥 已报 76% · 🔔 排队 23 人</span>
+          </li>
+          <li><strong>2. 《恩爱夫妻工作坊》555期</strong>
+            <span class="stat">开课：2022-08-05 至 2022-08-07 · 广州腾飞大厦 · 6Q张三</span>
+            <span class="stat">📈 近7日报读 28 人 · 🔥 已报 68%</span>
+          </li>
+        </ol>
+        <p class="xiaq">小Q为你整理了各课程最近可报读期数，点击就可以报读哦</p>
+        <div class="session-list">${cards.map(sessionCard).join("")}</div>
+      </div>`;
+    }
+
+    function renderFig3() {
+      const cards = [
+        { loc: "广州市", name: "第533期《高EQ智慧父母》一阶（广州站）", teacher: "6Q张三", time: "2022-08-05 09:00:00 至 2022-08-07 18:00:00" },
+        { loc: "广州市", name: "第532期《高EQ智慧父母》一阶（广州站）", teacher: "6Q张三", time: "2022-08-12 09:00:00 至 2022-08-14 18:00:00" },
+        { loc: "南宁市", name: "第531期《高EQ智慧父母》一阶（南宁站）", teacher: "6Q张三", time: "2022-08-19 09:00:00 至 2022-08-21 18:00:00" }
+      ];
+      return `<div class="ai-card">
+        <p>用户希望寻找有关 <strong>总导师</strong> 的课程。以下是符合要求的信息和报读期数：</p>
+        <p>1. 《智慧父母一阶课程》<br>2. 《智慧父母二阶课程》<br>3. 《高EQ恩爱夫妻 分享会》</p>
+        <p class="highlight-label">亮点介绍</p>
+        <p>（各课程亮点文案…）</p>
+        <p class="xiaq">小Q为您整理了每个课程最近可报读的期数，点击就可以报读哦</p>
+        <div class="session-list">${cards.map(sessionCard).join("")}</div>
+      </div>`;
+    }
+
+    function renderFollowup() {
+      const cards = [
+        { loc: "南宁站", name: "第530期《高EQ智慧父母》一阶（南宁站）", teacher: "6Q李四", time: "2022-09-02 09:00:00 至 2022-09-04 18:00:00" }
+      ];
+      return `<div class="ai-card">
+        <p>已为你筛选 <strong>南宁站</strong> 仍可报读的一阶期数：</p>
+        <div class="session-list">${cards.map(sessionCard).join("")}</div>
+      </div>`;
+    }
+
+    function renderUnsupported() {
+      return `<div class="ai-card unsupported-box">
+        <p>小Q暂不支持其他类型的智能检索哦</p>
+        <p class="unsupported-hint">你可以去全部看看：</p>
+        <div class="chat-capsule-scroll">
+          <div class="redirect-tags">
+            <button type="button" class="redirect-tag suggested" data-action="go-all">去全部看看</button>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function renderAllPanelHtml(q) {
+      const kw = escapeHtml(q || "");
+      return `
+        <p class="all-keyword">全部 · 关键词「${kw}」</p>
+        <section class="section">
+          <div class="section-head"><h3>课程 / 期数</h3><span>1 条</span></div>
+          <div class="mini-session">第533期《高EQ智慧父母》一阶（广州站）· 6Q张三 · 08-05 开课</div>
+        </section>
+        <section class="section">
+          <div class="section-head"><h3>线上课程类</h3><span>1 条</span></div>
+          <div class="online-card">
+            <div class="thumb">高效亲子沟通指南<span class="badge">专栏</span></div>
+            <div class="info">
+              <div class="title">会长第 333期 线上恋爱咨询话题专栏</div>
+              <div class="meta"><span class="price">免费</span><span class="learned">2333人已学习</span></div>
+            </div>
+          </div>
+        </section>
+        <section class="section">
+          <div class="section-head"><h3>6Q商城</h3><span>1 条</span></div>
+          <div class="mall-card">
+            <div class="mall-thumb">6Q潮玩盲盒</div>
+            <div class="mall-info">
+              <div class="title">【EQ】恋爱咨询公仔</div>
+              <div><span class="mall-price">¥ 55.00</span><span class="mall-old">¥ 88.00</span></div>
+            </div>
+          </div>
+        </section>
+        <section class="section">
+          <div class="section-head"><h3>相关文章</h3><span>1 条</span></div>
+          <div class="article-card">
+            <div class="article-thumb"><span class="type">文章</span></div>
+            <div class="article-info">
+              <div class="title">恋爱咨询是否为骗局</div>
+              <div class="desc">恋爱咨询是干嘛的恋爱咨询是干嘛的恋…</div>
+            </div>
+          </div>
+        </section>
+        <section class="section">
+          <div class="section-head"><h3>视频</h3><span>1 条</span></div>
+          <div class="video-block">
+            <div class="video-title">这是一个视频的标题<span class="video-badge">试看</span></div>
+            <div class="video-thumb">
+              <span class="views">1.2万次播</span>
+              <span class="dur">09:22</span>
+            </div>
+          </div>
+        </section>
+        <section class="section">
+          <div class="section-head"><h3>音频</h3><span>1 条</span></div>
+          <div class="audio-card">
+            <div class="audio-thumb"></div>
+            <div class="audio-info">
+              <div class="title">恋爱咨询专题采访</div>
+              <div class="plays">2.7万人听过</div>
+            </div>
+          </div>
+        </section>`;
+    }
+
+    const TAB_LABELS = {
+      online: "线上课程",
+      offline: "线下课程",
+      mall: "6Q商城",
+      camp: "领袖营",
+      eq: "高EQ"
+    };
+
+    function getCurrentSearchQuery() {
+      const expanded = document.querySelector(".screen.is-search-expanded .search-panel-input");
+      if (expanded) {
+        const v = expanded.value.trim();
+        if (v) return v;
+      }
+      const synced = (globalSearchQuery || lastQuery || "").trim();
+      if (synced) return synced;
+      const active = document.querySelector(".screen.active");
+      if (active) {
+        const collapsed = active.querySelector(".search-input-collapsed");
+        if (collapsed && collapsed.value.trim()) return collapsed.value.trim();
+      }
+      return "";
+    }
+
+    function syncTabBarsActive(tabId) {
+      document.querySelectorAll("#tabsBar .tab, #tabsBarAi .tab").forEach(t => {
+        t.classList.toggle("active", t.dataset.tab === tabId);
+      });
+    }
+
+    function switchResultsTab(tabId) {
+      syncTabBarsActive(tabId);
+      document.querySelectorAll("#screen-results .results-panel").forEach(p => {
+        p.classList.toggle("active", p.dataset.panel === tabId);
+      });
+      const filterRow = document.getElementById("filterRow");
+      if (filterRow) {
+        filterRow.style.display = tabId === "all" || tabId === "ai" ? "none" : "flex";
+      }
+    }
+
+    function renderOnlineListHtml(q) {
+      const kw = escapeHtml(q);
+      return `<p class="tab-category-keyword">线上课程 · 「${kw}」</p>
+        <div class="online-card">
+          <div class="thumb">高效亲子沟通指南<span class="badge">专栏</span></div>
+          <div class="info">
+            <div class="title">会长第 333期 线上${kw}话题专栏</div>
+            <div class="meta"><span class="price">免费</span><span class="learned">2333人已学习</span></div>
+          </div>
+        </div>`;
+    }
+
+    function renderCategoryPanelHtml(tabId, q) {
+      const label = TAB_LABELS[tabId] || tabId;
+      if (!q) {
+        return `<p class="tab-category-keyword">${label}</p>
+          <div class="tab-category-empty"><div class="empty-illus">🔍</div><span>请在搜索框输入关键词</span></div>`;
+      }
+      const kw = escapeHtml(q);
+      const head = `<p class="tab-category-keyword">${label} · 「${kw}」</p>`;
+      const mocks = {
+        offline: `${head}<div class="mini-session">第412期《领袖营·${kw}》暑期营 · 深圳站 · 07-15 开营</div>`,
+        mall: `${head}<div class="mall-card">
+          <div class="mall-thumb">${kw.slice(0, 6)}</div>
+          <div class="mall-info">
+            <div class="title">【EQ】与「${kw}」相关的商品</div>
+            <div><span class="mall-price">¥ 55.00</span><span class="mall-old">¥ 88.00</span></div>
+          </div>
+        </div>`,
+        camp: `${head}<div class="mini-session">领袖营 · ${kw} · 亲子户外拓展 · 名额有限</div>`,
+        eq: `${head}<div class="mini-session">高EQ课程 · ${kw} · 情绪管理工作坊 · 09-01 开课</div>`
+      };
+      return mocks[tabId] || `${head}<p class="tab-category-empty">暂无「${kw}」相关结果</p>`;
+    }
+
+    function loadCategoryTab(tabId, query) {
+      if (tabId === "online") {
+        const list = document.getElementById("onlineList");
+        const empty = document.getElementById("onlineEmpty");
+        if (!query) {
+          list.style.display = "none";
+          empty.style.display = "flex";
+          const msg = empty.querySelector("span");
+          if (msg) msg.textContent = "请在搜索框输入关键词";
+          return;
+        }
+        list.style.display = "block";
+        empty.style.display = "none";
+        list.innerHTML = renderOnlineListHtml(query);
+        return;
+      }
+      const panel = document.getElementById("panel-" + tabId);
+      if (panel) panel.innerHTML = renderCategoryPanelHtml(tabId, query);
+    }
+
+    function handleTabSwitch(tabId) {
+      const q = getCurrentSearchQuery();
+      if (q) {
+        syncAllSearchInputs(q);
+        lastQuery = q;
+      }
+      searchScreens.forEach(s => collapseSearchOnScreen(s));
+
+      if (tabId === "ai") {
+        syncTabBarsActive("ai");
+        showScreen("ai");
+        if (!q) {
+          setLogic("ai_route", "【Tab·AI智搜】搜索框为空，仅切换视图");
+          return;
+        }
+        if (!aiSearchEnabled) {
+          openResultsAll(q);
+          return;
+        }
+        const intent = classifyIntent(q);
+        if (intent === "ai_course") {
+          if (isNewKeywordSubmit(q)) {
+            beginSearchSession(q, { forceNew: true });
+            chatFeed.innerHTML = "";
+            openAI(q, null, { skipSessionStart: true });
+          } else {
+            syncTabBarsActive("ai");
+            showScreen("ai");
+            setLogic("ai_route", "【Tab·AI】保留对话，未换关键词");
+          }
+          return;
+        }
+        syncTabBarsActive("ai");
+        showScreen("ai");
+        appendTurn(q, renderUnsupported(), true);
+        setLogic("unsupported", `【Tab·AI】query=<code>${escapeHtml(q)}</code>`);
+        return;
+      }
+
+      showScreen("results");
+      switchResultsTab(tabId);
+
+      if (tabId === "all") {
+        document.getElementById("panel-all").innerHTML = renderAllPanelHtml(q);
+        setLogic("results_all", q
+          ? `【Tab·全部】query=<code>${escapeHtml(q)}</code> · 聚合检索`
+          : "【Tab·全部】搜索框为空");
+        return;
+      }
+
+      loadCategoryTab(tabId, q);
+      setLogic("results_online", q
+        ? `【Tab·${TAB_LABELS[tabId] || tabId}】query=<code>${escapeHtml(q)}</code> · 类目内检索`
+        : `【Tab·${TAB_LABELS[tabId] || tabId}】搜索框为空`);
+    }
+
+    function openResultsAll(query) {
+      lastQuery = query;
+      syncAllSearchInputs(query);
+      searchScreens.forEach(s => collapseSearchOnScreen(s));
+      showScreen("results");
+      const panelAll = document.getElementById("panel-all");
+      if (panelAll) panelAll.innerHTML = renderAllPanelHtml(query);
+      switchResultsTab("all");
+      setLogic("results_all", `query=<code>${escapeHtml(query)}</code> · 全部 Tab 聚合多类型结果`);
+    }
+
+    function pickTemplate(q) {
+      if (q.includes("广州")) return renderFig2;
+      if (q.includes("总导师")) return renderFig3;
+      if (q.includes("南宁")) return renderFollowup;
+      return renderFig1;
+    }
+
+    function scrollChatToBottom() {
+      chatFeed.scrollTop = chatFeed.scrollHeight;
+    }
+
+    function appendTurn(query, html, isUnsupported) {
+      const turn = document.createElement("div");
+      turn.className = "chat-turn";
+      turn.innerHTML = `
+        <div class="user-bubble">${escapeHtml(query)}</div>
+        ${html}`;
+      chatFeed.appendChild(turn);
+      requestAnimationFrame(scrollChatToBottom);
+      if (isUnsupported) {
+        turn.querySelectorAll("[data-action='go-all']").forEach(btn => {
+          btn.addEventListener("click", () => openResultsAll(lastQuery));
+        });
+      }
+    }
+
+    function escapeHtml(s) {
+      const d = document.createElement("div");
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function openAI(query, templateFn, opts = {}) {
+      lastQuery = query;
+      syncAllSearchInputs(query);
+      searchScreens.forEach(s => collapseSearchOnScreen(s));
+      let rotated = false;
+      if (!opts.skipSessionStart) {
+        rotated = beginSearchSession(query, {
+          forceNew: opts.forceNewSession ?? isNewKeywordSubmit(query)
+        });
+        if (rotated) chatFeed.innerHTML = "";
+      }
+      syncTabBarsActive("ai");
+      showScreen("ai");
+      const sid = searchSession.sessionId || "—";
+      setLogic(rotated ? "new_topic" : "ai_route",
+        `query=<code>${escapeHtml(query)}</code> · <code>sessionId=${escapeHtml(sid)}</code>`);
+      const fn = templateFn || pickTemplate(query);
+      recordTurn(query, "user");
+      appendTurn(query, fn(), false);
+      recordTurn("[cards]", "assistant");
+    }
+
+    function runSearch(query, opts = {}) {
+      const q = normalizeQuery(query);
+      const intent = opts.forceIntent || classifyIntent(q, opts);
+      if (intent === "empty") return;
+
+      const fromSubmit = opts.source === "submit";
+      const isNewTopic = fromSubmit && isNewKeywordSubmit(q);
+
+      if (!aiSearchEnabled && !opts.inAI) {
+        if (isNewTopic) beginSearchSession(q, { forceNew: true });
+        openResultsAll(q);
+        return;
+      }
+
+      if (intent === "ai_course") {
+        syncTabBarsActive("ai");
+        showScreen("ai");
+        if (opts.inAI) {
+          if (!searchSession.sessionId) beginSearchSession(q);
+          setLogic("followup", `<code>sessionId=${escapeHtml(searchSession.sessionId)}</code> · 续聊不清空`);
+          recordTurn(q, "user");
+          appendTurn(q, pickTemplate(q)(), false);
+          recordTurn("[cards]", "assistant");
+        } else if (isNewTopic) {
+          openAI(q, null, { forceNewSession: true });
+        } else if (!chatFeed.children.length) {
+          openAI(q);
+        } else {
+          setLogic("ai_route", "同关键词再次提交 → 保留对话");
+          recordTurn(q, "user");
+          appendTurn(q, pickTemplate(q)(), false);
+        }
+        return;
+      }
+
+      if (intent === "ai_unsupported") {
+        syncTabBarsActive("ai");
+        showScreen("ai");
+        setLogic("unsupported", `<code>sessionId=${escapeHtml(searchSession.sessionId || "—")}</code> · 保留对话`);
+        recordTurn(q, "user");
+        appendTurn(q, renderUnsupported(), true);
+        return;
+      }
+
+      if (isNewTopic) beginSearchSession(q, { forceNew: true });
+      openResultsAll(q);
+    }
+
+    function initDemos() {
+      const wrap = document.getElementById("demoBtns");
+      demos.forEach(d => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.innerHTML = `<strong>#${d.id} ${d.label}</strong>${d.query}`;
+        btn.addEventListener("click", () => {
+          syncAllSearchInputs(d.query);
+          const entryCtx = searchScreens.find(s => s.el.id === "screen-entry");
+          if (entryCtx) expandSearchOnScreen(entryCtx);
+          if (d.type === "followup") {
+            if (!searchSession.sessionId || !chatFeed.children.length) {
+              runSearch("智慧父母一阶课程", { source: "submit" });
+            }
+            runSearch(d.query, { inAI: true });
+          } else if (d.type === "general") {
+            runSearch(d.query, { source: "submit" });
+          } else {
+            runSearch(d.query, { source: "submit" });
+          }
+        });
+        wrap.appendChild(btn);
+      });
+    }
+
+    document.querySelectorAll(".screen[data-screen]").forEach(initSearchScreen);
+
+    document.getElementById("aiSendBtn").addEventListener("click", sendChat);
+    document.getElementById("aiChatInput").addEventListener("keydown", e => {
+      if (e.key === "Enter") sendChat();
+    });
+
+    function sendChat() {
+      const input = document.getElementById("aiChatInput");
+      const q = input.value.trim();
+      if (!q) return;
+      input.value = "";
+      runSearch(q, { inAI: true, source: "chat" });
+    }
+
+    function bindResultsTabBar(barEl) {
+      if (!barEl) return;
+      barEl.querySelectorAll(".tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+          handleTabSwitch(tab.dataset.tab);
+        });
+      });
+    }
+
+    bindResultsTabBar(document.getElementById("tabsBar"));
+    bindResultsTabBar(document.getElementById("tabsBarAi"));
+
+    initDemos();
+    setLogic("entry");
+  </script>
+</body>
+</html>
