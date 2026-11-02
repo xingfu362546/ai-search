@@ -25,6 +25,8 @@
 | 路径 | 用途 |
 |------|------|
 | [docs/spec-v6.md](./docs/spec-v6.md) | **v6 需求说明书**（8 类意图 Prompt、路由规则、子流字段、导语 Prompt、验收用例） |
+| [dsl/ai-search-v6.yml](./dsl/ai-search-v6.yml) | **v6 Dify DSL**（可导入；课程链保留，内容类走知识库） |
+| [dsl/README.md](./dsl/README.md) | DSL 导入后待填项、节点地图、验证方式 |
 | [ai-search-dify-architecture-v6.html](./ai-search-dify-architecture-v6.html) | **v6 技术方案**（节点规格、接口待填补模板、知识库方案、联调顺序） |
 | [ai-search-v6.html](./ai-search-v6.html) | **v6 原型**（全站 8 类按意图命中，无「去全部看看」） |
 | [docs/plan-v6-full-scope.md](./docs/plan-v6-full-scope.md) | 全站智能检索版本规划 |
