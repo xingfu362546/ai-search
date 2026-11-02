@@ -9,6 +9,7 @@
 | [index.html](./index.html) | 项目导航页 |
 | [ai-search-v1.html](./ai-search-v1.html) | 交互原型（侧栏含「查看技术方案 v5」入口） |
 | [ai-search-dify-architecture-draft.html](./ai-search-dify-architecture-draft.html) | 意图识别技术方案 v5 |
+| [ai-search-dify-architecture-v6.html](./ai-search-dify-architecture-v6.html) | **技术方案 v6**（8 类子流、接口占位清单、HTTP 与知识库双通道） |
 
 ## v5 落地文件
 
@@ -18,6 +19,18 @@
 | [config/entity-dictionary.example.json](./config/entity-dictionary.example.json) | 课名/城市/导师词典示例（进知识库或 BFF） |
 | [docs/dify-prompt-node1-v5.txt](./docs/dify-prompt-node1-v5.txt) | Dify 节点① 系统 Prompt（可直接复制） |
 | [docs/test-queries-v5.md](./docs/test-queries-v5.md) | 10 条验收用例 |
+
+## v6 规划
+
+| 路径 | 用途 |
+|------|------|
+| [docs/spec-v6.md](./docs/spec-v6.md) | **v6 需求说明书**（8 类意图 Prompt、路由规则、子流字段、导语 Prompt、验收用例） |
+| [ai-search-dify-architecture-v6.html](./ai-search-dify-architecture-v6.html) | **v6 技术方案**（节点规格、接口待填补模板、知识库方案、联调顺序） |
+| [ai-search-v6.html](./ai-search-v6.html) | **v6 原型**（全站 8 类按意图命中，无「去全部看看」） |
+| [docs/plan-v6-full-scope.md](./docs/plan-v6-full-scope.md) | 全站智能检索版本规划 |
+| [docs/dsl-analysis.md](./docs/dsl-analysis.md) | 生产 Dify DSL 现状解析（实际只实现 1 类，v6 改造清单） |
+| [config/intent-slots-v6.json](./config/intent-slots-v6.json) | v6 意图枚举（8 类 + general）+ 各类抽参字段 + 结果编排策略 |
+| [docs/diagrams/](./docs/diagrams/) | 四张图：现状流程 / v6 画布目标架构 / 子流标准结构 / 数据源双通道（drawio + PNG） |
 
 ## v5 概述
 

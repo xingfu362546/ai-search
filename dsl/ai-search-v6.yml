@@ -1,0 +1,2100 @@
+app:
+  description: 6Q 全站智能搜索 v6：8 类内容按意图命中，内容类走知识库，课程走既有期数接口
+  icon: face_with_monocle
+  icon_background: '#FFE4E8'
+  icon_type: emoji
+  mode: advanced-chat
+  name: AI超级搜索 v6（全站 8 类）
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/tongyi:0.2.2@9f1b8743f95f2a42c1c93bb3d3757a2d76480236e34563d7eac9966f8e8034bb
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables:
+  - description: 储存本轮总结的history
+    id: 153af607-2804-4336-982b-f8d0d2dacb1e
+    name: hsty
+    selector:
+    - conversation
+    - hsty
+    value: ''
+    value_type: string
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 20
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1711528708197-source-1783158943079
+      selected: false
+      source: '1711528708197'
+      sourceHandle: source
+      target: '1783158943079'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1783158943079-source-1781233179039
+      selected: false
+      source: '1783158943079'
+      sourceHandle: source
+      target: '1781233179039'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1781233179039-source-1781491262356
+      selected: false
+      source: '1781233179039'
+      sourceHandle: source
+      target: '1781491262356'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1781491262356-source-1783479266965
+      selected: false
+      source: '1781491262356'
+      sourceHandle: source
+      target: '1783479266965'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1783479266965-source-1781490823260
+      selected: false
+      source: '1783479266965'
+      sourceHandle: source
+      target: '1781490823260'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1781490823260-d3228c46-a020-4b10-9230-873a480941ae-1782818657079
+      selected: false
+      source: '1781490823260'
+      sourceHandle: d3228c46-a020-4b10-9230-873a480941ae
+      target: '1782818657079'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1781490823260-843c7fb3-cb84-4df1-b6b2-df67a4dc8b5b-17829761329860
+      selected: false
+      source: '1781490823260'
+      sourceHandle: 843c7fb3-cb84-4df1-b6b2-df67a4dc8b5b
+      target: '17829761329860'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1781490823260-347d479d-4d53-4373-b036-7c9bbda4e1e1-1900000000001
+      selected: false
+      source: '1781490823260'
+      sourceHandle: 347d479d-4d53-4373-b036-7c9bbda4e1e1
+      target: '1900000000001'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1781490823260-742542b6-cdf5-4308-a3f0-a0ea17419b20-17821201509870
+      selected: false
+      source: '1781490823260'
+      sourceHandle: 742542b6-cdf5-4308-a3f0-a0ea17419b20
+      target: '17821201509870'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1781490823260-false-1782113851054
+      selected: false
+      source: '1781490823260'
+      sourceHandle: 'false'
+      target: '1782113851054'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1782818657079-source-1782874059640
+      selected: false
+      source: '1782818657079'
+      sourceHandle: source
+      target: '1782874059640'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1782874059640-source-1782874247920
+      selected: false
+      source: '1782874059640'
+      sourceHandle: source
+      target: '1782874247920'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1782874247920-true-17815990321890
+      selected: false
+      source: '1782874247920'
+      sourceHandle: 'true'
+      target: '17815990321890'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1782874247920-1c828d14-e08c-46c0-a7c1-c8b91253451d-17815990321890
+      selected: false
+      source: '1782874247920'
+      sourceHandle: 1c828d14-e08c-46c0-a7c1-c8b91253451d
+      target: '17815990321890'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1782874247920-false-1781505092291
+      selected: false
+      source: '1782874247920'
+      sourceHandle: 'false'
+      target: '1781505092291'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1782874247920-cf02afda-72e2-42c2-8122-3a4da74f7b91-1781505092291
+      selected: false
+      source: '1782874247920'
+      sourceHandle: cf02afda-72e2-42c2-8122-3a4da74f7b91
+      target: '1781505092291'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 17815990321890-source-17815990321891
+      selected: false
+      source: '17815990321890'
+      sourceHandle: source
+      target: '17815990321891'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 17829761329860-source-17815990321891
+      selected: false
+      source: '17829761329860'
+      sourceHandle: source
+      target: '17815990321891'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 17815990321891-source-17815990321892
+      selected: false
+      source: '17815990321891'
+      sourceHandle: source
+      target: '17815990321892'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 17815990321892-true-1781598510471
+      selected: false
+      source: '17815990321892'
+      sourceHandle: 'true'
+      target: '1781598510471'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 17815990321892-false-1782129629050
+      selected: false
+      source: '17815990321892'
+      sourceHandle: 'false'
+      target: '1782129629050'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 17815990321892-d1b98a85-cbf4-4884-8ff9-6f4b08d56d78-17820974321910
+      selected: false
+      source: '17815990321892'
+      sourceHandle: d1b98a85-cbf4-4884-8ff9-6f4b08d56d78
+      target: '17820974321910'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 17815990321892-94bf1b3b-17ad-4f7a-8e54-587f5a5bbfc0-17815990321893
+      selected: false
+      source: '17815990321892'
+      sourceHandle: 94bf1b3b-17ad-4f7a-8e54-587f5a5bbfc0
+      target: '17815990321893'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 17815990321892-756be1c8-bbc9-43c4-a997-7451ee96b1c7-17829793634240
+      selected: false
+      source: '17815990321892'
+      sourceHandle: 756be1c8-bbc9-43c4-a997-7451ee96b1c7
+      target: '17829793634240'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1781598510471-source-1782111091579
+      selected: false
+      source: '1781598510471'
+      sourceHandle: source
+      target: '1782111091579'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 17829793634240-source-1782111091579
+      selected: false
+      source: '17829793634240'
+      sourceHandle: source
+      target: '1782111091579'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 17821201509870-source-1782120560448
+      selected: false
+      source: '17821201509870'
+      sourceHandle: source
+      target: '1782120560448'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1900000000001-source-1900000000002
+      selected: false
+      source: '1900000000001'
+      sourceHandle: source
+      target: '1900000000002'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1900000000002-source-1900000000003
+      selected: false
+      source: '1900000000002'
+      sourceHandle: source
+      target: '1900000000003'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1900000000003-source-1900000000004
+      selected: false
+      source: '1900000000003'
+      sourceHandle: source
+      target: '1900000000004'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1900000000004-source-1900000000005
+      selected: false
+      source: '1900000000004'
+      sourceHandle: source
+      target: '1900000000005'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1782111091579-source-1900000000006
+      selected: false
+      source: '1782111091579'
+      sourceHandle: source
+      target: '1900000000006'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 17815990321893-source-1900000000006
+      selected: false
+      source: '17815990321893'
+      sourceHandle: source
+      target: '1900000000006'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 17820974321910-source-1900000000006
+      selected: false
+      source: '17820974321910'
+      sourceHandle: source
+      target: '1900000000006'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1782129629050-source-1900000000006
+      selected: false
+      source: '1782129629050'
+      sourceHandle: source
+      target: '1900000000006'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1781505092291-source-1900000000006
+      selected: false
+      source: '1781505092291'
+      sourceHandle: source
+      target: '1900000000006'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: custom
+        targetType: custom
+      id: 1900000000006-47367a35-65ab-4558-897f-59654eae749b-1900000000001
+      selected: false
+      source: '1900000000006'
+      sourceHandle: 47367a35-65ab-4558-897f-59654eae749b
+      target: '1900000000001'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 用户输入内容+用户ID+当前坐标 拼接
+        selected: false
+        title: 2.1 开始-开始
+        type: start
+        variables:
+        - default: ''
+          hint: ''
+          label: 历史摘要
+          max_length: 256
+          options: []
+          placeholder: ''
+          required: false
+          type: text-input
+          variable: history
+        - hint: ''
+          label: 所在城市
+          max_length: 256
+          options: []
+          placeholder: ''
+          required: false
+          type: text-input
+          variable: user_city
+        - hint: ''
+          label: 当前日期
+          max_length: 256
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: current_date
+        - hint: ''
+          label: 会话ID
+          max_length: 256
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: session_id
+        - hint: ''
+          label: 用户ID
+          max_length: 256
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: user_id
+        - hint: ''
+          label: 已展示结果 ID 集合
+          max_length: 256
+          options: []
+          placeholder: ''
+          required: false
+          type: text-input
+          variable: shown_session_ids
+      height: 266
+      id: '1711528708197'
+      position:
+        x: -273.09159505648506
+        y: 70.15506068249795
+      positionAbsolute:
+        x: -273.09159505648506
+        y: 70.15506068249795
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - sys
+          - query
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: qwen3.6-flash-2026-04-16
+          provider: langgenius/tongyi/tongyi
+        prompt_config:
+          jinja2_variables:
+          - value_selector:
+            - sys
+            - query
+            variable: query
+        prompt_template:
+        - edition_type: basic
+          id: 5e737317-12dd-49bf-9818-90e4ace05be1
+          role: system
+          text: "你是 6Q APP 的 AI 超级搜索助手。\n\n只做两件事：\n1. 判断用户当前问题命中了哪几类内容\n2. 抽取各类检索需要的字段\n\n不回答业务内容，不生成任何实时信息。\n\n【运行时变量】\n- query：用户当前问题\n- history：前文摘要\n- shown_session_ids：已展示结果 ID 摘要\n- user_city：用户定位城市，可为空\n- current_date：当前日期\n\n【输出要求】\n只输出一个 JSON 对象；不要输出解释、说明、前后缀或 Markdown。\n\n【intents 取值】\n只允许以下 9 个值，可多选：\n- online_course   线上课程\n- offline_course  线下课程 / 期数 / 报读\n- leader_camp     领袖营 / 夏令营 / 冬令营 / 营期\n- mentor          高EQ导师 / 老师\n- mall_goods      6Q商城 / 商品 / 盲盒\n- article         文章\n- video           视频\n- audio           音频\n- general         泛搜兜底\n\n【intents 判定】\n- 一句可以命中多类，输出数组，例如“恋爱咨询” -> [\"article\",\"video\",\"audio\"]。\n- 按内容本身判断，不要因为某个词往课程上靠。\n- 只有完全无法归类时，才输出 [\"general\"]。\n- 纯问候、致谢、告别、闲聊 -> intents 输出 [\"general\"]，且 social_chat = true。\n\n各类触发词参考：\n- offline_course：课程、报读、报名、开课、期数、第几期、还有吗、附近\n- online_course：线上课、网课、视频课、线上学习\n- leader_camp：夏令营、冬令营、集训营、亲子营、营期、领袖营、研学\n- mentor：导师、老师、讲师、教练、谁教\n- mall_goods：商城、买、商品、价格、盲盒、周边、书籍\n- article：文章、资讯、干货、怎么写的、有没有讲\n- video：视频、短片、讲解、看视频\n\
+            - audio：音频、听、收听、电台、录音\n\n【course_name 固定映射】\n只允许使用以下映射，不得自行新增或猜测：\n- “一阶” -> 《高EQ智慧父母》一阶\n- “二阶” -> 《高EQ智慧父母》(二阶)\n- “进阶” -> 进阶\n- “高AQ” -> 《高AQ智慧父母》\n- “高IQ” -> 《高IQ智慧父母》\n- “高CQ” -> 《高CQ智慧父母》\n- “高SQ” -> 《高SQ智慧父母》\n- “高RQ” -> 《高RQ智慧父母》基础班\n- “高RQ 进阶” -> 《高RQ智慧父母》进阶班\n- “亲子沟通心灵密码”“分享会” -> 《亲子沟通心灵密码》分享会\n- “沙龙” -> 6Q读书沙龙\n- “创意沙龙” -> 6Q创意沙龙（定制版）\n- “恩爱夫妻工作坊”“恩爱夫妻” -> 高EQ亲密关系工作坊\n\n强约束：\n- 明确课程全称优先于泛称映射。\n- “专业课”单独出现时，不得判断为一阶或二阶。\n- 除以上规则外，不要改动 course_name。\n\n【user_city 使用禁令】\nuser_city 仅用于“附近 / 本地”类定位搜索。\n当前 query 不含“我附近”“附近”“本地”“离我近一点”时：\n- 完全忽略 user_city，不得令 city = user_city。\n- city 只能来自当前 query 明确城市，或 history 明确继承。\n\n【城市与附近规则】\n1. 当前 query 明确出现城市名：city = 该城市，location_mode = city，不继承 history.city。\n2. 当前 query 含附近表达：location_mode = nearby；user_city 非空则 city = user_city，否则 city = \"\"。\n3. 当前 query 无城市也无附近表达：忽略 user_city；history 有明确 city 则继承，否则 city = \"\"，location_mode = none。\n4. 不得根据 user_city、示例或常识猜测城市。\n\n【其他字段】\n- keyword：输出当前 query 原文，不改写、不截断。\n- instructor_name：提取导师姓名；当前没有但\
+            \ history 有明确值时继承。\n- phase_no：“533期”“第533期” -> \"533\"；“第几期” -> \"\"。\n- date_from / date_to：格式 YYYY-MM-DD。\n  - 近期：未来 30 天；这几天：未来 7 天；这周：本周一至周日\n  - 这个月：本月 1 日至月末；今年：current_date 至当年 12 月 31 日\n  - 未明确时间时，线下课程默认近期\n- 各内容类 topic：把用户的检索意图压缩成 2~8 个字的关键词，用于知识库检索；没有则空字符串。\n\n【ready 与 missing】\n- ready 表示整体是否可检索：只要有一类能查即为 true。\n- social_chat = true 时 ready = false。\n- intents 为 [\"general\"] 时 ready = true（走泛搜）。\n- missing 仅在完全无法检索时填写，用英文逗号分隔。\n\n【续聊规则】\n- 当前 query 明确条件优先于 history。\n- history 只补全缺失字段，不编造、不覆盖当前明确条件。\n- 冲突时以当前 query 为准。\n\n【输出格式】\n所有字段必须输出；无值统一输出空字符串，不输出 null。\n最终只输出一个 JSON 对象。"
+        - edition_type: basic
+          id: 88ec472f-139d-4693-8db2-f9fedde3b9eb
+          jinja2_text: "{{ query }}\r\n\r\n"
+          role: user
+          text: '请根据以下输入进行意图识别和字段提取：
+
+
+            query: {{#sys.query#}}
+
+            history: {{#1783158943079.clean_history#}}
+
+            shown_session_ids: {{#1711528708197.shown_session_ids#}}
+
+            user_city: {{#1711528708197.user_city#}}
+
+            current_date: {{#1711528708197.current_date#}}
+
+            session_id: {{#1711528708197.session_id#}}
+
+            user_id: {{#1711528708197.user_id#}}
+
+            '
+        selected: true
+        structured_output:
+          schema:
+            properties:
+              confidence:
+                type: number
+              intent:
+                enum:
+                - course_enroll
+                - other
+                type: string
+              keyword:
+                type: string
+              missing:
+                items:
+                  type: string
+                type: array
+              ready_for_api:
+                type: boolean
+              slots:
+                properties:
+                  city:
+                    type:
+                    - string
+                    - 'null'
+                  course_name:
+                    type:
+                    - string
+                    - 'null'
+                  date_from:
+                    type:
+                    - string
+                    - 'null'
+                  date_to:
+                    type:
+                    - string
+                    - 'null'
+                  instructor_name:
+                    type:
+                    - string
+                    - 'null'
+                  location_mode:
+                    enum:
+                    - city
+                    - nearby
+                    - none
+                    type: string
+                  phase_no:
+                    type:
+                    - number
+                    - 'null'
+                required:
+                - course_name
+                - city
+                - location_mode
+                - instructor_name
+                - phase_no
+                - date_from
+                - date_to
+                type: object
+            required:
+            - intent
+            - ready_for_api
+            - keyword
+            - slots
+            - missing
+            - confidence
+            type: object
+        structured_output_enabled: false
+        title: 2.2 LLM-意图识别 v6（8 类）
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1781233179039'
+      position:
+        x: 80.08827634823922
+        y: 91.15506068249795
+      positionAbsolute:
+        x: 80.08827634823922
+        y: 91.15506068249795
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        cases:
+        - case_id: d3228c46-a020-4b10-9230-873a480941ae
+          conditions:
+          - comparison_operator: is
+            id: 0be9b380-bd5e-4f9a-8007-37a6f90f1aeb
+            value: true
+            varType: boolean
+            variable_selector:
+            - '1781491262356'
+            - has_course
+          - comparison_operator: is not
+            id: 6430be93-337b-4658-a7da-c6a3811ee8df
+            value: ''
+            varType: string
+            variable_selector:
+            - '1781491262356'
+            - course_name
+          id: d3228c46-a020-4b10-9230-873a480941ae
+          logical_operator: and
+        - case_id: 843c7fb3-cb84-4df1-b6b2-df67a4dc8b5b
+          conditions:
+          - comparison_operator: is
+            id: 4ed0a529-0d0e-422b-98d5-2b5677b77fab
+            value: true
+            varType: boolean
+            variable_selector:
+            - '1781491262356'
+            - has_course
+          - comparison_operator: is
+            id: 68d7d22c-7874-4404-96b6-320b3cf0a746
+            value: ''
+            varType: string
+            variable_selector:
+            - '1781491262356'
+            - course_name
+          id: 843c7fb3-cb84-4df1-b6b2-df67a4dc8b5b
+          logical_operator: and
+        - case_id: 347d479d-4d53-4373-b036-7c9bbda4e1e1
+          conditions:
+          - comparison_operator: is
+            id: fad4d4ec-0924-4d20-a6eb-ac34b1f4215c
+            value: true
+            varType: boolean
+            variable_selector:
+            - '1781491262356'
+            - has_content
+          id: 347d479d-4d53-4373-b036-7c9bbda4e1e1
+          logical_operator: and
+        - case_id: 742542b6-cdf5-4308-a3f0-a0ea17419b20
+          conditions:
+          - comparison_operator: is
+            id: 2ce3c2f6-b3bf-4939-b061-825964210fb9
+            value: true
+            varType: boolean
+            variable_selector:
+            - '1781491262356'
+            - social_chat
+          id: 742542b6-cdf5-4308-a3f0-a0ea17419b20
+          logical_operator: and
+        desc: 'CASE1 课程名明确 -> 2.15A 知识库归一再查期数
+
+          CASE2 只有城市/导师 -> 2.15D 直接按条件查期数
+
+          CASE3 命中内容类 -> 3.1 知识库检索链
+
+          CASE4 闲聊 -> 2.18
+
+          ELSE -> 没找到'
+        selected: false
+        title: 2.4 条件-主路由 v6
+        type: if-else
+      height: 821
+      id: '1781490823260'
+      position:
+        x: 736.7799068214641
+        y: 91.15506068249795
+      positionAbsolute:
+        x: 736.7799068214641
+        y: 91.15506068249795
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        code: "import json\nimport re\n\nCONTENT_TYPES = (\n    \"online_course\", \"offline_course\", \"leader_camp\", \"mentor\",\n    \"mall_goods\", \"article\", \"video\", \"audio\",\n)\n\nEMPTY = {\n    \"intents\": \"general\",\n    \"has_course\": False,\n    \"has_content\": False,\n    \"social_chat\": False,\n    \"ready\": False,\n    \"intent\": \"other\",\n    \"ready_for_api\": False,\n    \"keyword\": \"\",\n    \"course_category\": \"\",\n    \"course_id\": \"\",\n    \"course_name\": \"\",\n    \"city\": \"\",\n    \"location_mode\": \"\",\n    \"instructor_name\": \"\",\n    \"phase_no\": \"\",\n    \"date_from\": \"\",\n    \"date_to\": \"\",\n    \"missing_fields\": \"\",\n    \"confidence\": \"\",\n    \"reply_mode\": \"general_search\",\n    \"topic\": \"\",\n}\n\n\ndef to_bool(value):\n    if isinstance(value, bool):\n        return value\n    if isinstance(value, str):\n        return value.strip().lower() in (\"true\", \"1\", \"yes\")\n    return bool(value)\n\n\
+          \ndef main(text: str = \"\", history: str = \"\") -> dict:\n    raw = (text or \"\").strip()\n\n    m = re.search(r\"```(?:json)?\\s*\\n?(.*?)```\", raw, re.DOTALL)\n    if m:\n        raw = m.group(1).strip()\n\n    if raw and not raw.startswith((\"{\", \"[\")):\n        j = re.search(r\"\\{.*\\}\", raw, re.DOTALL)\n        if j:\n            raw = j.group(0)\n\n    if not raw:\n        return dict(EMPTY)\n\n    try:\n        data = json.loads(raw)\n    except json.JSONDecodeError:\n        return dict(EMPTY)\n\n    # 兼容模型把 JSON 再包一层 text 的情况\n    if isinstance(data.get(\"text\"), str) and data[\"text\"].strip().startswith(\"{\"):\n        try:\n            data = json.loads(data[\"text\"].strip())\n        except json.JSONDecodeError:\n            pass\n\n    # ---- intents 归一化：数组 / 字符串 / 旧版单值都兼容 ----\n    raw_intents = data.get(\"intents\")\n    if raw_intents is None:\n        legacy = str(data.get(\"intent\", \"\") or \"\")\n        raw_intents = [legacy] if legacy else []\n\
+          \n    if isinstance(raw_intents, str):\n        raw_intents = re.split(r\"[,，、\\s]+\", raw_intents)\n\n    intents = []\n    for item in raw_intents or []:\n        value = str(item or \"\").strip()\n        if value == \"course_enroll\":\n            value = \"offline_course\"\n        if value and value not in intents:\n            intents.append(value)\n\n    if not intents:\n        intents = [\"general\"]\n\n    social_chat = to_bool(data.get(\"social_chat\", False))\n\n    has_course = \"offline_course\" in intents\n    content_intents = [i for i in intents if i in CONTENT_TYPES and i != \"offline_course\"]\n    has_content = bool(content_intents)\n    if \"general\" in intents:\n        has_content = True\n    # 闲聊不触发任何检索\n    if social_chat:\n        has_content = False\n\n    # ---- 课程链沿用的旧字段 ----\n    slots = data.get(\"slots\") or {}\n    course_slots = slots.get(\"offline_course\") or {}\n\n    def pick(key, default=\"\"):\n        value = data.get(key)\n        if\
+          \ value in (None, \"\"):\n            value = course_slots.get(key)\n        if value is None:\n            return default\n        return str(value)\n\n    keyword = str(data.get(\"keyword\", \"\") or \"\")\n    course_name = pick(\"course_name\")\n    city = pick(\"city\")\n    location_mode = pick(\"location_mode\")\n    instructor_name = pick(\"instructor_name\")\n    phase_no = pick(\"phase_no\")\n    date_from = pick(\"date_from\")\n    date_to = pick(\"date_to\")\n    course_id = pick(\"course_id\")\n\n    first_content = content_intents[0] if content_intents else \"\"\n    topic = \"\"\n    if first_content:\n        block = slots.get(first_content) or {}\n        if isinstance(block, dict):\n            topic = str(block.get(\"topic\", \"\") or \"\")\n            if not topic:\n                for key in (\"mentor_name\", \"album\", \"goods_name\", \"camp_name\", \"author\"):\n                    value = str(block.get(key, \"\") or \"\").strip()\n                    if\
+          \ value:\n                        topic = value\n                        break\n    # 检索词兜底：永远不能为空，否则知识库会召回全库\n    if not topic:\n        topic = keyword\n\n    reply_mode = str(data.get(\"reply_mode\", \"\") or \"\")\n    if not reply_mode:\n        if social_chat:\n            reply_mode = \"social_chat\"\n        elif course_name:\n            reply_mode = \"search_course\"\n        elif instructor_name:\n            reply_mode = \"search_teacher\"\n        elif city:\n            reply_mode = \"search_city\"\n        elif has_course:\n            reply_mode = \"general_search\"\n        else:\n            reply_mode = \"general_search\"\n\n    ready = to_bool(data.get(\"ready\", data.get(\"ready_for_api\", False)))\n    if social_chat:\n        ready = False\n\n    missing = data.get(\"missing\") or data.get(\"missing_fields\") or []\n    if isinstance(missing, list):\n        missing_fields = \",\".join(str(x) for x in missing if str(x).strip())\n    else:\n        missing_fields\
+          \ = str(missing or \"\")\n\n    confidence = data.get(\"confidence\", \"\")\n    confidence = \"\" if confidence is None else str(confidence)\n\n    return {\n        \"intents\": \",\".join(intents),\n        \"has_course\": has_course,\n        \"has_content\": has_content,\n        \"social_chat\": social_chat,\n        \"ready\": ready,\n        \"intent\": \"course_enroll\" if has_course else \"other\",\n        \"ready_for_api\": to_bool(data.get(\"ready_for_api\", False)),\n        \"keyword\": keyword,\n        \"course_category\": \"offline_course\" if has_course else \"\",\n        \"course_id\": course_id,\n        \"course_name\": course_name,\n        \"city\": city,\n        \"location_mode\": location_mode,\n        \"instructor_name\": instructor_name,\n        \"phase_no\": phase_no,\n        \"date_from\": date_from,\n        \"date_to\": date_to,\n        \"missing_fields\": missing_fields,\n        \"confidence\": confidence,\n        \"reply_mode\": reply_mode,\n\
+          \        \"topic\": topic,\n    }\n"
+        code_language: python3
+        desc: 解析意图结果
+        outputs:
+          intents:
+            children: null
+            type: string
+          has_course:
+            children: null
+            type: boolean
+          has_content:
+            children: null
+            type: boolean
+          social_chat:
+            children: null
+            type: boolean
+          ready:
+            children: null
+            type: boolean
+          intent:
+            children: null
+            type: string
+          ready_for_api:
+            children: null
+            type: boolean
+          keyword:
+            children: null
+            type: string
+          course_category:
+            children: null
+            type: string
+          course_id:
+            children: null
+            type: string
+          course_name:
+            children: null
+            type: string
+          city:
+            children: null
+            type: string
+          location_mode:
+            children: null
+            type: string
+          instructor_name:
+            children: null
+            type: string
+          phase_no:
+            children: null
+            type: string
+          date_from:
+            children: null
+            type: string
+          date_to:
+            children: null
+            type: string
+          missing_fields:
+            children: null
+            type: string
+          confidence:
+            children: null
+            type: string
+          reply_mode:
+            children: null
+            type: string
+          topic:
+            children: null
+            type: string
+        selected: false
+        title: 2.3 代码-解析意图 v6
+        type: code
+        variables:
+        - value_selector:
+          - '1781233179039'
+          - text
+          value_type: string
+          variable: text
+        - value_selector:
+          - '1783158943079'
+          - clean_history
+          value_type: string
+          variable: history
+      height: 79
+      id: '1781491262356'
+      position:
+        x: 380.95806704955515
+        y: 91.15506068249795
+      positionAbsolute:
+        x: 380.95806704955515
+        y: 91.15506068249795
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        answer: "我还需要一点信息才能继续帮你查，你可以告诉我课程名称、开课城市或导师姓名来获取更准确的结果；\n示例：吴中仁的课程、广州市的课程\n@hsy \n课程名称：{{#1781491262356.course_name#}},上课导师：{{#1781491262356.instructor_name#}},开课城市：{{#1781491262356.city#}},开课时间：{{#1781491262356.date_from#}}至{{#1781491262356.date_to#}}\n@_hsy"
+        desc: 未识别到课程相关意图推荐用户前往全部搜索
+        selected: false
+        title: 2.5 回复-补充信息
+        type: answer
+        variables: []
+      height: 331
+      id: '1781505092291'
+      position:
+        x: 2081.836084909562
+        y: -368.4237547611891
+      positionAbsolute:
+        x: 2081.836084909562
+        y: -368.4237547611891
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.8
+          mode: chat
+          name: qwen3.6-flash-2026-04-16
+          provider: langgenius/tongyi/tongyi
+        prompt_config:
+          jinja2_variables: []
+        prompt_template:
+        - id: 84c85581-fae3-44ce-9a19-c387d78f1cca
+          role: system
+          text: '你是 6Q APP AI 超级搜索的结果说明助手。
+
+            你的任务是：
+
+            根据已经查询到的 search_course 结果，生成一段给用户看的说明文案。
+
+            要求：
+
+            1. 只输出给用户看的说明文字，不要输出 JSON
+
+            2. 当前节点只处理 search_course 场景
+
+            3. 输出顺序固定为：课程说明 -> 亮点介绍 -> 课程期数说明
+
+            4. 不要编造任何接口中没有的信息
+
+            5. 不要补充价格、名额、库存、报名状态等未明确要求展示的信息
+
+            6. 不要复述技术字段名
+
+            7. 文案的作用是告诉用户：已经找到对应课程，并整理好了下方课程期数列表
+
+
+            输出要求：
+
+            - 首句要尽量完整带上用户已提出的查询条件；已识别的非空条件按“时间范围 -> 导师 -> 城市 -> 课程名 -> 期数”顺序自然组织
+
+            - 课程名优先使用 kb_course_name_full；若为空，再退回 course_name
+
+            - 若 instructor_name 不为空，要在首句体现“{instructor_name}导师”
+
+            - 若 city 不为空，要在首句体现“在{city}”
+
+            - 若 kb_course_highlight_text 不为空，单独输出“亮点介绍”标题和正文
+
+            - 若有 phase_no，体现“已为你整理该课程第{phase_no}期相关课程期数”
+
+            - 若无 phase_no，则体现“已为你整理近期相关课程期数”
+
+            - 若有 date_from / date_to，必须自然带出时间范围；不要遗漏用户给出的时间条件
+
+            - 首句推荐口径：为您查询{date_from 至 date_to 范围内}{instructor_name 导师}{在 city 的}{课程名}课程。以下是符合要求的信息和报读期数：
+
+            - 结尾引导用户查看下方课程期数列表
+
+            -尝试修复：如果看到 ç»§ 这类特征乱码，逆转为 UTF-8'
+        - edition_type: basic
+          id: 9b418a5c-8ddf-45fa-a74f-1db50a545e2a
+          jinja2_text: ''
+          role: user
+          text: 'reply_mode: {{#1781491262356.reply_mode#}}
+
+            keyword:{{#1781491262356.keyword#}}
+
+            course_name:{{#1781491262356.course_name#}}
+
+            city:{{#1781491262356.city#}}
+
+            instructor_name: {{#1781491262356.instructor_name#}}
+
+            phase_no:{{#1781491262356.phase_no#}}
+
+            date_from: {{#1781491262356.date_from#}}
+
+            date_to: {{#1781491262356.date_to#}}
+
+            result_count:{{#17815990321891.result_count#}}
+
+            list_json:{{#17815990321891.list_json#}}
+
+            kb_course_name_full: {{#1782874059640.kb_course_name_full#}}
+
+            kb_course_highlight_text: {{#1782874059640.kb_course_highlight_text#}}'
+        selected: false
+        title: 2.9线下课导语生成
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1781598510471'
+      position:
+        x: 3275.3740456135324
+        y: 496.7203079409692
+      positionAbsolute:
+        x: 3275.3740456135324
+        y: 496.7203079409692
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-139
+            key: ''
+            type: text
+            value: "{\n  \"userId\": {{#1711528708197.user_id#}},\n  \"sessionId\": {{#1711528708197.session_id#}},\n  \"keyword\": {{#1781491262356.keyword#}},\n  \"courseId\": {{#1782874059640.kb_course_id#}},\n  \"courseName\":,\n  \"city\": {{#1781491262356.city#}},\n  \"instructorName\": {{#1781491262356.instructor_name#}},\n  \"phaseNo\": {{#1781491262356.phase_no#}},\n  \"dateFrom\": {{#1781491262356.date_from#}},\n  \"dateTo\": {{#1781491262356.date_to#}},\n \"shownSessionIds\": {{#1783479266965.shownSessionIds#}}\n}"
+          type: json
+        desc: 领袖营查询
+        headers: Content-Type:application/json
+        isInIteration: false
+        isInLoop: false
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: false
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          connect: 10
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+          read: 10
+          write: 10
+        title: 2.15 HTTP-线下课查询-按课程标准化
+        type: http-request
+        url: https://www.6qedu.cn/goods/api/product/periods/ai/list
+        variables: []
+      height: 135
+      id: '17815990321890'
+      position:
+        x: 2081.836084909562
+        y: 157.06198478034506
+      positionAbsolute:
+        x: 2081.836084909562
+        y: 157.06198478034506
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        code: "import json\n\ndef to_int(value, default=None):\n    if value is None:\n        return default\n    try:\n        return int(str(value).strip())\n    except (TypeError, ValueError):\n        return default\n\ndef pick_first_present(*values):\n    for value in values:\n        if value is None:\n            continue\n        if isinstance(value, str):\n            stripped = value.strip()\n            if stripped == \"\" or stripped.lower() == \"null\":\n                continue\n            return value\n        return value\n    return None\n\ndef main(body_from_course=None, status_code_from_course=None, body_from_general=None, status_code_from_general=None, shown_session_ids=\"\"):\n    body = pick_first_present(body_from_course, body_from_general)\n    status_code = pick_first_present(status_code_from_course, status_code_from_general)\n    payload = {}\n\n    if isinstance(body, str) and body:\n        payload = json.loads(body)\n    elif isinstance(body, dict):\n     \
+          \   payload = body\n\n    code_int = to_int(payload.get(\"code\"))\n    status_code_int = to_int(status_code)\n    raw_success = payload.get(\"success\")\n\n    if code_int is not None:\n        success = code_int == 200\n    elif raw_success is not None:\n        success = bool(raw_success)\n    elif status_code_int is not None:\n        success = status_code_int == 200\n    else:\n        success = False\n\n    data_obj = payload.get(\"data\")\n    if isinstance(data_obj, dict):\n        data_list = data_obj.get(\"result\") or []\n    else:\n        data_list = payload.get(\"list\") or []\n\n    if not isinstance(data_list, list):\n        data_list = []\n\n    message = payload.get(\"msg\") or payload.get(\"message\") or \"\"\n    shown_ids = str(shown_session_ids or \"\").strip()\n    has_shown_ids = shown_ids != \"\"\n\n    if success:\n        if len(data_list) > 0:\n            result_state = \"has_result\"\n        else:\n            result_state = \"no_more\" if has_shown_ids\
+          \ else \"empty\"\n    else:\n        result_state = \"error\"\n\n    return {\n        \"success\": success,\n        \"has_result\": len(data_list) > 0,\n        \"result_count\": str(len(data_list)),\n        \"message\": str(message),\n        \"result_state\": result_state,\n        \"list_json\": json.dumps(data_list, ensure_ascii=False),\n        \"list_json_marked\": \"@s_obj@\" + json.dumps(data_list, ensure_ascii=False) + \"@e_obj@\"\n    }"
+        code_language: python3
+        isInIteration: false
+        isInLoop: false
+        outputs:
+          has_result:
+            children: null
+            type: boolean
+          list_json:
+            children: null
+            type: string
+          list_json_marked:
+            children: null
+            type: string
+          message:
+            children: null
+            type: string
+          result_count:
+            children: null
+            type: string
+          result_state:
+            children: null
+            type: string
+          success:
+            children: null
+            type: boolean
+        retry_config:
+          max_retries: 3
+          retry_enabled: false
+          retry_interval: 1000
+        selected: false
+        title: 2.16解析线下课营查询结果
+        type: code
+        variables:
+        - value_selector:
+          - '17815990321890'
+          - body
+          value_type: string
+          variable: body_from_course
+        - value_selector:
+          - '17815990321890'
+          - status_code
+          value_type: number
+          variable: status_code_from_course
+        - value_selector:
+          - '1783479266965'
+          - shownSessionIds
+          value_type: string
+          variable: shown_session_ids
+        - value_selector:
+          - '17829761329860'
+          - body
+          value_type: string
+          variable: body_from_general
+        - value_selector:
+          - '17829761329860'
+          - status_code
+          value_type: number
+          variable: status_code_from_general
+      height: 51
+      id: '17815990321891'
+      position:
+        x: 2433.3058533928693
+        y: 496.7203079409692
+      positionAbsolute:
+        x: 2433.3058533928693
+        y: 496.7203079409692
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: 3c4da077-8ca4-47ea-bad4-c89a1ecb0daf
+            value: true
+            varType: boolean
+            variable_selector:
+            - '17815990321891'
+            - success
+          - comparison_operator: is
+            id: f5006916-60de-4224-80ec-216ba7511341
+            value: has_result
+            varType: string
+            variable_selector:
+            - '17815990321891'
+            - result_state
+          - comparison_operator: is
+            id: 7211d205-2e1d-4a1e-9364-b4b501eaa842
+            value: search_course
+            varType: string
+            variable_selector:
+            - '1781491262356'
+            - reply_mode
+          id: 'true'
+          logical_operator: and
+        - case_id: 756be1c8-bbc9-43c4-a997-7451ee96b1c7
+          conditions:
+          - comparison_operator: is
+            id: 6eae1b1d-e401-4c68-b923-f660e0dd37f1
+            value: true
+            varType: boolean
+            variable_selector:
+            - '17815990321891'
+            - success
+          - comparison_operator: is
+            id: b46a7e04-f1c4-46e5-8f16-57adbf163dbc
+            value: has_result
+            varType: string
+            variable_selector:
+            - '17815990321891'
+            - result_state
+          - comparison_operator: is not
+            id: d0616d1e-9455-44a5-917b-7d0b89c53ee4
+            value: search_course
+            varType: string
+            variable_selector:
+            - '1781491262356'
+            - reply_mode
+          id: 756be1c8-bbc9-43c4-a997-7451ee96b1c7
+          logical_operator: and
+        - case_id: 94bf1b3b-17ad-4f7a-8e54-587f5a5bbfc0
+          conditions:
+          - comparison_operator: is
+            id: 940e8b30-58ed-40cd-acd7-1b0ccc37297f
+            value: true
+            varType: boolean
+            variable_selector:
+            - '17815990321891'
+            - success
+          - comparison_operator: is
+            id: 068450f8-80ac-494d-be4b-6a8b500263b2
+            value: empty
+            varType: string
+            variable_selector:
+            - '17815990321891'
+            - result_state
+          id: 94bf1b3b-17ad-4f7a-8e54-587f5a5bbfc0
+          logical_operator: and
+        - case_id: d1b98a85-cbf4-4884-8ff9-6f4b08d56d78
+          conditions:
+          - comparison_operator: is
+            id: 8f4150b5-ec9b-417d-b8f7-c56cc8acc970
+            value: true
+            varType: boolean
+            variable_selector:
+            - '17815990321891'
+            - success
+          - comparison_operator: contains
+            id: 04af2ab5-f5a2-4df5-accd-c4cacf0a3857
+            value: no_more
+            varType: string
+            variable_selector:
+            - '17815990321891'
+            - result_state
+          id: d1b98a85-cbf4-4884-8ff9-6f4b08d56d78
+          logical_operator: and
+        desc: "case1 表示线下课程查询成功，且当前是搜课程场景\ncase2 表示线下课程查询成功，但当前不是搜课程场景 \ncase3 当前没有搜索到匹配课程期数\ncase4 当前已经没有更多未发送的课程期数\n或其他异常"
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: 2.17线下课程结果判断
+        type: if-else
+      height: 707
+      id: '17815990321892'
+      position:
+        x: 2794.894005930887
+        y: 496.7203079409692
+      positionAbsolute:
+        x: 2794.894005930887
+        y: 496.7203079409692
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        answer: "暂时没有找到 {{#1782874059640.kb_course_name_full#}} 匹配的课程期数，请换课程、导师、地址、时间试试看。\n@hsy \n课程名称：{{#1781491262356.course_name#}},上课导师：{{#1781491262356.instructor_name#}},开课城市：{{#1781491262356.city#}},开课时间：{{#1781491262356.date_from#}}至{{#1781491262356.date_to#}}\n@_hsy"
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: ' 2.11线下课空结果提示'
+        type: answer
+        variables: []
+      height: 274
+      id: '17815990321893'
+      position:
+        x: 3712.8927361774113
+        y: 963.1039567092527
+      positionAbsolute:
+        x: 3712.8927361774113
+        y: 963.1039567092527
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        answer: " {{#1782874059640.kb_course_name_full#}} 没有更多的课程期数了！看看其他课程吧！\n@hsy \n课程名称：{{#1781491262356.course_name#}},上课导师：{{#1781491262356.instructor_name#}},开课城市：{{#1781491262356.city#}},开课时间：{{#1781491262356.date_from#}}至{{#1781491262356.date_to#}}\n@_hsy"
+        isInIteration: false
+        isInLoop: false
+        selected: false
+        title: ' 2.12没有更多'
+        type: answer
+        variables: []
+      height: 258
+      id: '17820974321910'
+      position:
+        x: 3275.3740456135324
+        y: 1158.7345434023084
+      positionAbsolute:
+        x: 3275.3740456135324
+        y: 1158.7345434023084
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        answer: "{{#1781598510471.text#}}\n{{#17829793634240.text#}}\n{{#17815990321891.list_json_marked#}}\n@hsy \n课程名称：{{#1781491262356.course_name#}},上课导师：{{#1781491262356.instructor_name#}},开课城市：{{#1781491262356.city#}},开课时间：{{#1781491262356.date_from#}}至{{#1781491262356.date_to#}}\n@_hsy"
+        selected: false
+        title: 2.13线下课统一回复
+        type: answer
+        variables: []
+      height: 279
+      id: '1782111091579'
+      position:
+        x: 3741.9398194316964
+        y: 478.7901881794764
+      positionAbsolute:
+        x: 3741.9398194316964
+        y: 478.7901881794764
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        answer: '没找到和「{{#1781491262356.keyword#}}」相关的内容，换个说法试试～
+
+          @hsy{{#1781491262356.keyword#}}@_hsy'
+        selected: false
+        title: 没找到内容
+        type: answer
+        variables: []
+      height: 255
+      id: '1782113851054'
+      position:
+        x: 1109.4164318212179
+        y: 1191.5139946975696
+      positionAbsolute:
+        x: 1109.4164318212179
+        y: 1191.5139946975696
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        isInIteration: false
+        isInLoop: false
+        model:
+          completion_params:
+            temperature: 0.8
+          mode: chat
+          name: qwen3.6-flash-2026-04-16
+          provider: langgenius/tongyi/tongyi
+        prompt_config:
+          jinja2_variables: []
+        prompt_template:
+        - id: 84c85581-fae3-44ce-9a19-c387d78f1cca
+          role: system
+          text: '你是 6Q APP 的 AI 搜索助手。
+
+
+            当前场景是：用户发送了一句闲聊、问候、礼貌互动或轻聊天消息。
+
+
+            你的任务只有一个：
+
+            根据用户当前语气，并参考 history 中已有上下文，回复 1 句自然、简短、友好的中文回应。
+
+
+            要求：
+
+            1. 只回复给用户的话，不要输出 JSON，不要输出解释
+
+            2. 若 history 中有课程会务上下文，可以轻微承接语气，但不要重复罗列课程、城市、导师、期数信息
+
+            3. 不要引导用户去“全部看看”
+
+            4. 不要主动继续推荐搜索
+
+            5. 不要编造任何会务信息
+
+            6. 语气自然，长度控制在 1 句'
+        - edition_type: basic
+          id: 9b418a5c-8ddf-45fa-a74f-1db50a545e2a
+          jinja2_text: ''
+          role: user
+          text: 'history:{{#1783158943079.clean_history#}}
+
+            keyword:{{#1781491262356.keyword#}}'
+        selected: false
+        title: 2.18闲聊回复
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17821201509870'
+      position:
+        x: 1109.4164318212179
+        y: 943.3780731487261
+      positionAbsolute:
+        x: 1109.4164318212179
+        y: 943.3780731487261
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        answer: "{{#17821201509870.text#}}\n@hsy{{#1781491262356.keyword#}}@_hsy\n@hsy \nquery：{{#sys.query#}}\n课程名称：{{#1781491262356.course_name#}},上课导师：{{#1781491262356.instructor_name#}},开课城市：{{#1781491262356.city#}},开课时间：{{#1781491262356.date_from#}}至{{#1781491262356.date_to#}}\n@_hsy"
+        selected: false
+        title: 闲聊回复
+        type: answer
+        variables: []
+      height: 279
+      id: '1782120560448'
+      position:
+        x: 1411.4379428081409
+        y: 943.3780731487261
+      positionAbsolute:
+        x: 1411.4379428081409
+        y: 943.3780731487261
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        answer: "当前检索服务有点异常，请稍后再试试哦。\n{{#17815990321890.body#}}\n{{#17829761329860.body#}}\n@hsy \n课程名称：{{#1781491262356.course_name#}},上课导师：{{#1781491262356.instructor_name#}},开课城市：{{#1781491262356.city#}},开课时间：{{#1781491262356.date_from#}}至{{#1781491262356.date_to#}}\n@_hsy"
+        selected: false
+        title: 线下课其他异常
+        type: answer
+        variables: []
+      height: 276
+      id: '1782129629050'
+      position:
+        x: 3275.3740456135324
+        y: 1503.3083956710605
+      positionAbsolute:
+        x: 3275.3740456135324
+        y: 1503.3083956710605
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        dataset_ids:
+        - X+hSeUQfeVAtvUj4bwPxoMv1TZOu9nLPHvJdmMIB5mDHdZc7Klbb4kmi3b+nzR9S
+        metadata_filtering_mode: automatic
+        metadata_model_config:
+          completion_params:
+            temperature: 0.6
+          mode: chat
+          name: qwen3.6-flash-2026-04-16
+          provider: langgenius/tongyi/tongyi
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 10
+          weights:
+            keyword_setting:
+              keyword_weight: 0.4
+            vector_setting:
+              embedding_model_name: text-embedding-v3
+              embedding_provider_name: langgenius/tongyi/tongyi
+              vector_weight: 0.6
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - '1781491262356'
+        - course_name
+        retrieval_mode: multiple
+        selected: false
+        title: 2.15A 知识库-课程查询
+        type: knowledge-retrieval
+      height: 89
+      id: '1782818657079'
+      position:
+        x: 1109.4164318212179
+        y: 142.68649925872472
+      positionAbsolute:
+        x: 1109.4164318212179
+        y: 142.68649925872472
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        code: "import json\nimport re\n\ndef pick_first(*values):\n    for value in values:\n        if value is None:\n            continue\n        text = str(value).strip()\n        if text:\n            return text\n    return \"\"\n\ndef parse_content_text(text):\n    raw = str(text or \"\").strip()\n    if not raw:\n        return {}\n    raw = raw.replace('\\\"', '\"')\n\n    pairs = {}\n    for key, value in re.findall(r'\"?([^\":；;]+)\"?\\s*:\\s*\"([^\"]*)\"', raw):\n        key = str(key).strip()\n        value = str(value).strip()\n        if key and value:\n            pairs[key] = value\n    return pairs\n\ndef extract_ordered_values(text):\n    raw = str(text or \"\").strip()\n    if not raw:\n        return []\n    raw = raw.replace('\\\"', '\"')\n    return [str(value).strip() for value in re.findall(r':\\s*\"([^\"]*)\"', raw) if str(value).strip()]\n\ndef normalize_item(item):\n    if not isinstance(item, dict):\n        return None\n\n    parsed = parse_content_text(item.get(\"\
+          content\", \"\"))\n    ordered_values = extract_ordered_values(item.get(\"content\", \"\"))\n    course_id = pick_first(\n        item.get(\"course_id\"),\n        item.get(\"id\"),\n        parsed.get(\"course_id\"),\n        parsed.get(\"产品编码\"),\n        ordered_values[0] if len(ordered_values) > 0 else \"\"\n    )\n    course_name_full = pick_first(\n        item.get(\"course_name_full\"),\n        item.get(\"course_name\"),\n        item.get(\"name\"),\n        parsed.get(\"course_name_full\"),\n        parsed.get(\"course_name\"),\n        parsed.get(\"课程名称\"),\n        ordered_values[1] if len(ordered_values) > 1 else \"\"\n    )\n    course_highlight_text = pick_first(\n        item.get(\"course_highlight_text\"),\n        item.get(\"highlight_text\"),\n        item.get(\"highlight\"),\n        item.get(\"summary\"),\n        parsed.get(\"course_highlight_text\"),\n        parsed.get(\"亮点介绍\"),\n        ordered_values[2] if len(ordered_values) > 2 else \"\"\n    )\n\n \
+          \   if not (course_id or course_name_full or course_highlight_text):\n        return None\n\n    return {\n        \"course_id\": course_id,\n        \"course_name_full\": course_name_full,\n        \"course_highlight_text\": course_highlight_text\n    }\n\ndef extract_list(payload):\n    if isinstance(payload, list):\n        return payload\n    if not isinstance(payload, dict):\n        return []\n\n    candidates = [\n        payload.get(\"body\"),\n        payload.get(\"list\"),\n        payload.get(\"data\")\n    ]\n\n    body_obj = payload.get(\"body\")\n    if isinstance(body_obj, dict):\n        candidates.extend([\n            body_obj.get(\"body\"),\n            body_obj.get(\"list\"),\n            body_obj.get(\"data\")\n        ])\n\n    for value in candidates:\n        if isinstance(value, list):\n            return value\n    return []\n\ndef main(body=None):\n    payload = {}\n    if isinstance(body, str) and body:\n        try:\n            payload = json.loads(body)\n\
+          \        except Exception:\n            payload = {}\n    elif isinstance(body, list):\n        payload = body\n    elif isinstance(body, dict):\n        payload = body\n\n    raw_list = extract_list(payload)\n    normalized_list = []\n    for raw_item in raw_list:\n        normalized = normalize_item(raw_item)\n        if normalized:\n            normalized_list.append(normalized)\n\n    count = len(normalized_list)\n    if count == 0:\n        return {\n            \"kb_hit\": False,\n            \"kb_match_count\": \"0\",\n            \"kb_course_id\": \"\",\n            \"kb_course_name_full\": \"\",\n            \"kb_course_highlight_text\": \"\",\n            \"kb_course_options\": \"\",\n            \"kb_match_state\": \"none\"\n        }\n\n    top_item = normalized_list[0]\n    options = []\n    if count > 1:\n        for item in normalized_list:\n            course_name_full = str(item.get(\"course_name_full\", \"\") or \"\")\n            course_id = str(item.get(\"course_id\"\
+          , \"\") or \"\")\n            if course_name_full:\n                options.append(f\"- ${course_name_full}（ID：${course_id}）\" if course_id else f\"- ${course_name_full}\")\n\n    return {\n        \"kb_hit\": True,\n        \"kb_match_count\": str(count),\n        \"kb_course_id\": str(top_item.get(\"course_id\", \"\") or \"\"),\n        \"kb_course_name_full\": str(top_item.get(\"course_name_full\", \"\") or \"\"),\n        \"kb_course_highlight_text\": str(top_item.get(\"course_highlight_text\", \"\") or \"\"),\n        \"kb_course_options\": \"\\n\".join(options),\n        \"kb_match_state\": \"single\" if count == 1 else \"multiple\"\n    }"
+        code_language: python3
+        outputs:
+          kb_course_highlight_text:
+            children: null
+            type: string
+          kb_course_id:
+            children: null
+            type: string
+          kb_course_name_full:
+            children: null
+            type: string
+          kb_course_options:
+            children: null
+            type: string
+          kb_hit:
+            children: null
+            type: boolean
+          kb_match_count:
+            children: null
+            type: string
+          kb_match_state:
+            children: null
+            type: string
+        selected: false
+        title: 2.15B 代码-解析课程知识库结果
+        type: code
+        variables:
+        - value_selector:
+          - '1782818657079'
+          - result
+          value_type: array[object]
+          variable: body
+      height: 51
+      id: '1782874059640'
+      position:
+        x: 1391.399680833657
+        y: 142.68649925872472
+      positionAbsolute:
+        x: 1391.399680833657
+        y: 142.68649925872472
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: 967d8a46-0c87-4f6b-a723-2ad87e1ef0dd
+            value: single
+            varType: string
+            variable_selector:
+            - '1782874059640'
+            - kb_match_state
+          id: 'true'
+          logical_operator: and
+        - case_id: 1c828d14-e08c-46c0-a7c1-c8b91253451d
+          conditions:
+          - comparison_operator: is
+            id: 2d1bcdc2-8fe0-4a0e-ac5c-c1cb54732cd0
+            value: multiple
+            varType: string
+            variable_selector:
+            - '1782874059640'
+            - kb_match_state
+          id: 1c828d14-e08c-46c0-a7c1-c8b91253451d
+          logical_operator: and
+        - case_id: cf02afda-72e2-42c2-8122-3a4da74f7b91
+          conditions:
+          - comparison_operator: contains
+            id: a36f957e-ad9f-42b7-8efc-14e22d94083f
+            value: none
+            varType: string
+            variable_selector:
+            - '1782874059640'
+            - kb_match_state
+          id: cf02afda-72e2-42c2-8122-3a4da74f7b91
+          logical_operator: and
+        desc: 'CASE 1 表示课程已唯一确认
+
+          CASE 2 表示命中多个课程，但已选出最相似课程
+
+          CASE 3 表示知识库未命中课程'
+        selected: false
+        title: 2.15C 条件-课程知识库结果判断
+        type: if-else
+      height: 367
+      id: '1782874247920'
+      position:
+        x: 1676.086709345066
+        y: 142.68649925872472
+      positionAbsolute:
+        x: 1676.086709345066
+        y: 142.68649925872472
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-139
+            key: ''
+            type: text
+            value: "{\n  \"userId\": {{#1711528708197.user_id#}},\n  \"sessionId\": {{#1711528708197.session_id#}},\n  \"keyword\": {{#1781491262356.keyword#}},\n \"courseId\": \"\",\n \"courseName\": \"\",\n  \"city\": {{#1781491262356.city#}},\n  \"instructorName\": {{#1781491262356.instructor_name#}},\n  \"phaseNo\": {{#1781491262356.phase_no#}},\n  \"dateFrom\": {{#1781491262356.date_from#}},\n  \"dateTo\": {{#1781491262356.date_to#}},\n \"shownSessionIds\": {{#1783479266965.shownSessionIds#}}\n}"
+          type: json
+        desc: 领袖营查询
+        headers: Content-Type:application/json
+        isInIteration: false
+        isInLoop: false
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: false
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          connect: 10
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+          read: 10
+          write: 10
+        title: 2.15D HTTP-线下课查询-按导师/城市等条件
+        type: http-request
+        url: https://www.6qedu.cn/goods/api/product/periods/ai/list
+        variables: []
+      height: 135
+      id: '17829761329860'
+      position:
+        x: 1109.4164318212179
+        y: 737.5872759124791
+      positionAbsolute:
+        x: 1109.4164318212179
+        y: 737.5872759124791
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        isInIteration: false
+        isInLoop: false
+        model:
+          completion_params:
+            temperature: 0.8
+          mode: chat
+          name: qwen3.6-flash-2026-04-16
+          provider: langgenius/tongyi/tongyi
+        prompt_config:
+          jinja2_variables: []
+        prompt_template:
+        - id: 84c85581-fae3-44ce-9a19-c387d78f1cca
+          role: system
+          text: "你是 6Q APP AI 超级搜索的结果说明助手。\n你的任务是：\n根据已经查询到的课程期数结果，生成一段给用户看的说明文案。\n要求：\n1. 只输出给用户看的说明文字，不要输出 JSON\n2. 文案通常控制在 1 到 2 段；只有 search_teacher 且适合汇总课程名时，允许在导语后补 1 组编号列表\n3. 语气自然、简洁、明确\n4. 不要编造任何接口中没有的信息\n5. 不要补充价格、名额、库存、报名状态等未明确要求展示的信息\n6. 不要复述技术字段名\n7. 文案的作用是告诉用户：已经整理好相关课程期数，下面可以查看列表\n8. 根据 reply_mode 生成对应展示口径，不要重新判断分支\n9. 可以读取 list_json 中的课程名称，用于生成课程汇总列表，但不要输出原始 JSON\n10. 如果 date_from / date_to 有值，需要把时间范围自然融入导语；不要遗漏用户给出的时间条件\n11. 导语首句要尽量完整带上用户已提出的查询条件；已识别的非空条件按“时间范围 -> 导师 -> 城市 -> 课程名 -> 期数”顺序自然组织\n\n当 reply_mode = search_teacher 时：\n- 优先使用：为您查询{date_from 至 date_to 范围内}{instructor_name}导师{在 city 的}{course_name}课程。以下是符合要求的信息和报读期数：\n- 如果 list_json 中可以归纳出多个不同课程名，可在下一行开始输出去重后的编号列表，最多展示 3 条\n- 编号列表使用 1. 2. 3. 格式，每条只保留课程名称，不补充编造说明\n- 如果 instructor_name 为空，则退化为“已为你整理相关导师课程和报读期数，以下是符合要求的信息：”\n\n当 reply_mode = search_city 时：\n- 优先使用：\U0001F50D 已为你筛选[{city}]{date_from 至 date_to 范围内}{instructor_name 导师的}{course_name}当前可报读/即将开课的期数，并按实时报名数据与课程质量智能排序：\n- 如果 city 为空，则退化为“已为你筛选当前可报读/即将开课（未来一个月内）的课程期数：”\n\
+            \n当 reply_mode = follow_up 时：\n- 优先使用：已继续为你补充筛选更多课程期数，以下是补充结果：\n- 如果 date_from / date_to 有值，也要在补充结果导语中自然带出时间范围\n\n当 reply_mode = general_search 时：\n- 优先使用：已为你整理{date_from 至 date_to 范围内}{instructor_name 导师}{在 city 的}{course_name}相关课程和可报读期数，以下是符合要求的信息：\n- 如果 date_from / date_to 有值，也要在导语中自然体现该时间范围\n\n如果 result_count 不为空且不等于 \"0\"，可以自然体现“已找到相关课程期数”。\n\n输出示例：\n- search_city + city=广州市：\n  \U0001F50D 已为你筛选[广州市]当前可报读/即将开课（未来一个月内）的期数，并按实时报名数据与课程质量智能排序：\n\n- search_teacher + instructor_name=刘中良，且 list_json 中包含多个课程名：\n  为您查询刘中良导师的课程。以下是符合要求的信息和报读期数：\n  1. 《智慧父母一阶课程》\n  2. 《智慧父母二阶课程》\n  3. 《高EQ恩爱夫妻 分享会》\n\n- 多条件组合：\n  为您查询2026-07-02 至 2026-12-31范围内吴中仁导师在深圳的《高EQ智慧父母》一阶课程。以下是符合要求的信息和报读期数：\n\n其他要求：\n-尝试修复：如果看到 ç»§ 这类特征乱码，逆转为 UTF-8"
+        - edition_type: basic
+          id: 9b418a5c-8ddf-45fa-a74f-1db50a545e2a
+          jinja2_text: ''
+          role: user
+          text: 'reply_mode: {{#1781491262356.reply_mode#}}
+
+            keyword:{{#1781491262356.keyword#}}
+
+            course_name:{{#1781491262356.course_name#}}
+
+            city:{{#1781491262356.city#}}
+
+            instructor_name: {{#1781491262356.instructor_name#}}
+
+            phase_no:{{#1781491262356.phase_no#}}
+
+            date_from: {{#1781491262356.date_from#}}
+
+            date_to: {{#1781491262356.date_to#}}
+
+            result_count:{{#17815990321891.result_count#}}
+
+            list_json:{{#17815990321891.list_json#}}'
+        selected: false
+        title: 2.9B LLM-导语生成-通用
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '17829793634240'
+      position:
+        x: 3275.3740456135324
+        y: 678.1504658725471
+      positionAbsolute:
+        x: 3275.3740456135324
+        y: 678.1504658725471
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        code: "def main(history: str) -> dict:\n    # 如果是空历史，直接返回\n    if not history:\n        return {\"clean_history\": \"\"}\n    \n    # 尝试修复：如果看到 ç»§ 这类特征乱码，逆转为 UTF-8\n    try:\n        # 1. 先按 Latin-1 转成原始字节\n        raw_bytes = history.encode('latin-1')\n        # 2. 再按 UTF-8 解码成中文\n        cleaned = raw_bytes.decode('utf-8')\n    except (UnicodeDecodeError, UnicodeEncodeError):\n        # 如果修复失败（可能部分字段是正常中文），保留原文\n        cleaned = history\n    \n    return {\"clean_history\": cleaned}"
+        code_language: python3
+        outputs:
+          clean_history:
+            children: null
+            type: string
+        selected: false
+        title: clean_history
+        type: code
+        variables:
+        - value_selector:
+          - '1711528708197'
+          - history
+          value_type: string
+          variable: history
+      height: 51
+      id: '1783158943079'
+      position:
+        x: 80.08827634823922
+        y: 258.7375417335159
+      positionAbsolute:
+        x: 80.08827634823922
+        y: 258.7375417335159
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        code: "def normalize_ids(value):\n    if value is None:\n        return \"\"\n    text = str(value).strip()\n    if text == \"\" or text.lower() == \"null\":\n        return \"\"\n    return text\n\ndef main(shown_session_ids=None, reply_mode=\"\"):\n    mode = str(reply_mode or \"\").strip()\n    cleaned = normalize_ids(shown_session_ids)\n    if mode != \"follow_up\":\n        cleaned = \"\"\n    return {\n        \"shownSessionIds\": cleaned\n    }"
+        code_language: python3
+        desc: '当前轮是续聊 follow_up 时，保留输入的 shown_session_ids
+
+          当前轮不是续聊时，清空它'
+        outputs:
+          shownSessionIds:
+            children: null
+            type: string
+        selected: false
+        title: 2.3A 代码-shownSessionIds清洗
+        type: code
+        variables:
+        - value_selector:
+          - '1711528708197'
+          - shown_session_ids
+          value_type: string
+          variable: shown_session_ids
+        - value_selector:
+          - '1781491262356'
+          - reply_mode
+          value_type: string
+          variable: reply_mode
+      height: 111
+      id: '1783479266965'
+      position:
+        x: 736.7799068214641
+        y: -58.42478516467712
+      positionAbsolute:
+        x: 736.7799068214641
+        y: -58.42478516467712
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        dataset_ids:
+        - 【待建数据集-6Q内容库】
+        metadata_filtering_mode: disabled
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 10
+          weights:
+            keyword_setting:
+              keyword_weight: 0.4
+            vector_setting:
+              embedding_model_name: text-embedding-v3
+              embedding_provider_name: langgenius/tongyi/tongyi
+              vector_weight: 0.6
+            weight_type: customized
+        query_attachment_selector: []
+        query_variable_selector:
+        - '1781491262356'
+        - topic
+        retrieval_mode: multiple
+        selected: false
+        title: 3.1 知识库-全站内容
+        type: knowledge-retrieval
+        desc: 数据集待建。文档格式见 docs/spec-v6.md，必须含 type / url 字段。
+      height: 100
+      id: '1900000000001'
+      position:
+        x: 1120
+        y: 620
+      positionAbsolute:
+        x: 1120
+        y: 620
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 240
+    - data:
+        code: "# =====================================================================\n# 占位节点：线上课程 / 领袖营 / 6Q商城 的检索接口尚未提供。\n#\n# 开发接入时，把本节点替换为 HTTP 请求节点，入参与出参按下面约定：\n#\n#   入参 keyword     string  用户原 query\n#   入参 intents     string  命中类目，逗号分隔，如 \"leader_camp,mall_goods\"\n#   入参 city        string  城市，可空\n#\n#   出参 items       array   每项至少包含\n#                        id, type, title, cover, url\n#                        线上课程：price\n#                        领袖营  ：camp_type, start_date\n#                        6Q商城  ：price, main_image, sales\n#\n# 在接口就位之前，本节点固定返回空数组，不伪造任何数据。\n# =====================================================================\n\n\ndef main(intents: str = \"\", keyword: str = \"\", city: str = \"\"):\n    wanted = [x for x in (intents or \"\").split(\",\") if x.strip()]\n    pending = [x for x in wanted if x in (\"online_course\", \"leader_camp\", \"mall_goods\")]\n\n    return {\n        \"items_json\": \"[]\",\n        \"pending_types\": \",\".join(pending),\n    \
+          \    \"has_result\": False,\n    }\n"
+        code_language: python3
+        desc: 线上课程 / 领袖营 / 6Q商城 接口占位，待开发替换为 HTTP 节点
+        outputs:
+          items_json:
+            children: null
+            type: string
+          pending_types:
+            children: null
+            type: string
+          has_result:
+            children: null
+            type: boolean
+        retry_config:
+          max_retries: 3
+          retry_enabled: false
+          retry_interval: 1000
+        selected: false
+        title: 3.2 占位-线上课/领袖营/商城
+        type: code
+        variables:
+        - value_selector:
+          - '1781491262356'
+          - intents
+          value_type: string
+          variable: intents
+        - value_selector:
+          - '1781491262356'
+          - keyword
+          value_type: string
+          variable: keyword
+        - value_selector:
+          - '1781491262356'
+          - city
+          value_type: string
+          variable: city
+      height: 100
+      id: '1900000000002'
+      position:
+        x: 1420
+        y: 620
+      positionAbsolute:
+        x: 1420
+        y: 620
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 240
+    - data:
+        code: "import json\nimport re\n\nORDER = [\n    (\"online_course\", \"线上课程\"),\n    (\"offline_course\", \"线下课程\"),\n    (\"leader_camp\", \"领袖营\"),\n    (\"mentor\", \"高EQ导师\"),\n    (\"mall_goods\", \"6Q商城\"),\n    (\"article\", \"文章\"),\n    (\"video\", \"视频\"),\n    (\"audio\", \"音频\"),\n]\nLABEL = dict(ORDER)\nPER_TYPE_LIMIT = 3\n\nFIELD_RE = re.compile(r\"^([A-Za-z_]+)\\s*[:：]\\s*(.*)$\")\n\n\ndef parse_chunk(content):\n    \"\"\"把知识库分段按 key: value 解析成字典。\"\"\"\n    item = {}\n    for line in (content or \"\").splitlines():\n        line = line.strip()\n        if not line:\n            continue\n        m = FIELD_RE.match(line)\n        if m:\n            item[m.group(1).lower()] = m.group(2).strip()\n    return item\n\n\ndef main(kb_result=None, stub_json=\"\", intents=\"\", keyword=\"\"):\n    wanted = [x for x in (intents or \"\").split(\",\") if x.strip()]\n    if \"general\" in wanted:\n        wanted = [k for k, _ in ORDER]\n\n    sections = {k: [] for k, _ in ORDER}\n\
+          \n    # 1. 知识库召回的内容类\n    for chunk in kb_result or []:\n        if not isinstance(chunk, dict):\n            continue\n        item = parse_chunk(chunk.get(\"content\", \"\"))\n        ctype = (item.get(\"type\") or \"\").strip()\n        if ctype not in sections:\n            continue\n        if ctype not in wanted:\n            continue\n        if not item.get(\"title\") or not item.get(\"url\"):\n            continue\n        sections[ctype].append({\n            \"id\": item.get(\"id\", \"\"),\n            \"type\": ctype,\n            \"title\": item.get(\"title\", \"\"),\n            \"cover\": item.get(\"cover\", \"\"),\n            \"url\": item.get(\"url\", \"\"),\n            \"summary\": item.get(\"summary\", \"\"),\n            \"author\": item.get(\"author\", \"\"),\n            \"duration\": item.get(\"duration\", \"\"),\n            \"specialty\": item.get(\"specialty\", \"\"),\n            \"avatar\": item.get(\"avatar\", \"\"),\n            \"album\": item.get(\"\
+          album\", \"\"),\n        })\n\n    # 2. 占位接口（目前返回空）\n    try:\n        stub_items = json.loads(stub_json or \"[]\")\n    except (TypeError, ValueError):\n        stub_items = []\n\n    for item in stub_items:\n        ctype = (item.get(\"type\") or \"\").strip()\n        if ctype in sections and ctype in wanted:\n            sections[ctype].append(item)\n\n    # 3. 按固定顺序裁剪、组装\n    blocks = []\n    counts = []\n    for ctype, label in ORDER:\n        items = sections[ctype][:PER_TYPE_LIMIT]\n        if not items:\n            continue\n        blocks.append({\"type\": ctype, \"total\": len(items), \"items\": items})\n        counts.append(\"%s %d\" % (label, len(items)))\n\n    has_result = bool(blocks)\n    if not has_result:\n        return {\n            \"sections_marked\": \"\",\n            \"has_result\": False,\n            \"counts_text\": \"\",\n            \"types_text\": \"\",\n            \"missing_types\": \"\",\n            \"state\": \"empty\",\n        }\n\n   \
+          \ types_text = \"、\".join(LABEL[b[\"type\"]] for b in blocks)\n    counts_text = \"、\".join(counts)\n\n    return {\n        \"sections_marked\": \"@s_obj@\" + json.dumps(blocks, ensure_ascii=False) + \"@e_obj@\",\n        \"has_result\": True,\n        \"counts_text\": counts_text,\n        \"types_text\": types_text,\n        \"missing_types\": \"\",\n        \"state\": \"has_result\",\n    }\n"
+        code_language: python3
+        desc: 知识库分段 + 占位结果 -> 按 type 组装分区卡片
+        outputs:
+          sections_marked:
+            children: null
+            type: string
+          has_result:
+            children: null
+            type: boolean
+          counts_text:
+            children: null
+            type: string
+          types_text:
+            children: null
+            type: string
+          missing_types:
+            children: null
+            type: string
+          state:
+            children: null
+            type: string
+        retry_config:
+          max_retries: 3
+          retry_enabled: false
+          retry_interval: 1000
+        selected: false
+        title: 3.3 代码-组装分区卡片
+        type: code
+        variables:
+        - value_selector:
+          - '1900000000001'
+          - result
+          value_type: array[object]
+          variable: kb_result
+        - value_selector:
+          - '1900000000002'
+          - items_json
+          value_type: string
+          variable: stub_json
+        - value_selector:
+          - '1781491262356'
+          - intents
+          value_type: string
+          variable: intents
+        - value_selector:
+          - '1781491262356'
+          - keyword
+          value_type: string
+          variable: keyword
+      height: 100
+      id: '1900000000003'
+      position:
+        x: 1720
+        y: 620
+      positionAbsolute:
+        x: 1720
+        y: 620
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 240
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        isInIteration: false
+        isInLoop: false
+        model:
+          completion_params:
+            temperature: 0.3
+          mode: chat
+          name: qwen3.6-flash-2026-04-16
+          provider: langgenius/tongyi/tongyi
+        prompt_config:
+          jinja2_variables: []
+        prompt_template:
+        - id: 328339ff-9fe0-4ad3-9e2e-257723da22d9
+          role: system
+          text: '你是 6Q APP 的搜索结果导语生成器。
+
+
+            根据本次命中的内容类目，写 1~2 句中文导语，放在卡片列表上方。
+
+
+            要求：
+
+            1. 只用命中的类目名与用户关键词，不要罗列条数以外的细节。
+
+            2. 不要编造任何内容，不要提及未被问到的价格、名额、日期。
+
+            3. 不要复述字段名，不要输出 JSON，不要输出 Markdown。
+
+            4. 结尾不要追加任何跳转引导、道歉或能力边界说明。
+
+            5. 语气自然、简短，像助手在交付结果。
+
+
+            示例：
+
+            - 仅文章：为你整理了几篇和「恋爱咨询」相关的文章：
+
+            - 文章+视频+音频：关于「恋爱咨询」，我找到了相关的文章、视频和音频：
+
+            - 多类且含课程：先为你列出课程信息，另外还有这些文章和视频可以参考：'
+        - edition_type: basic
+          id: efaf565e-35b0-433c-a742-3d1f4e31412c
+          jinja2_text: ''
+          role: user
+          text: '用户关键词：{{#1781491262356.keyword#}}
+
+            命中类目：{{#1900000000003.types_text#}}
+
+            各类条数：{{#1900000000003.counts_text#}}'
+        selected: false
+        title: 3.4 LLM-内容导语
+        type: llm
+        vision:
+          enabled: false
+      height: 100
+      id: '1900000000004'
+      position:
+        x: 2020
+        y: 620
+      positionAbsolute:
+        x: 2020
+        y: 620
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 240
+    - data:
+        answer: '{{#1900000000004.text#}}
+
+          {{#1900000000003.sections_marked#}}'
+        selected: false
+        title: 3.5 回复-内容分区卡片
+        type: answer
+        variables: []
+      height: 100
+      id: '1900000000005'
+      position:
+        x: 2320
+        y: 620
+      positionAbsolute:
+        x: 2320
+        y: 620
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 240
+    - data:
+        cases:
+        - case_id: 47367a35-65ab-4558-897f-59654eae749b
+          conditions:
+          - comparison_operator: is
+            id: 063bec25-ffd9-4157-8152-dc0525e0adec
+            value: true
+            varType: boolean
+            variable_selector:
+            - '1781491262356'
+            - has_content
+          id: 47367a35-65ab-4558-897f-59654eae749b
+          logical_operator: and
+        desc: 课程链跑完后补内容类；未命中站点直接结束
+        selected: false
+        title: 2.4B 条件-补充内容分支
+        type: if-else
+      height: 90
+      id: '1900000000006'
+      position:
+        x: 1120
+        y: 300
+      positionAbsolute:
+        x: 1120
+        y: 300
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 240
+    viewport:
+      x: 217.58953578791056
+      y: 178.55931548321269
+      zoom: 0.8705505632961252
+  rag_pipeline_variables: []

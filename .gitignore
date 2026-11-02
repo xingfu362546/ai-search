@@ -3,3 +3,10 @@ Thumbs.db
 *.log
 .env
 .env.*
+
+# 临时脚本与解压产物，不入库
+_t.py
+_v.py
+_scope_unzip/
+_scope_new_unzip/
+__pycache__/

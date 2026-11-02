@@ -1,0 +1,109 @@
+{
+  "$schema": "intent-slots-v6",
+  "description": "AI 智搜 · 全站 8 类意图与检索字段（v6）",
+  "changes_from_v5": [
+    "intent 单值 → intents 数组，支持一次问句命中多类",
+    "删除 other 降级分支，不再有「暂不支持 / 去全部看看」",
+    "新增 leader_camp / mentor / article / video / audio / mall_goods / online_course / general",
+    "course_enroll 拆为 online_course 与 offline_course"
+  ],
+  "intent_codes": {
+    "online_course": "网课、录播、专栏、线上学习",
+    "offline_course": "线下开班、开课、期数、报名、城市加课程",
+    "leader_camp": "领袖营、夏令营、集训营、亲子营",
+    "mentor": "导师、老师、谁讲、擅长领域",
+    "mall_goods": "商城商品、盲盒、公仔、潮玩、价格购买",
+    "article": "文章、干货、原理、怎么理解",
+    "video": "视频、讲解、短视频、试看",
+    "audio": "音频、听、录音、电台",
+    "general": "无法归类或跨多类，走 8 类并行兜底"
+  },
+  "display_order": [
+    "online_course",
+    "offline_course",
+    "leader_camp",
+    "mentor",
+    "mall_goods",
+    "article",
+    "video",
+    "audio"
+  ],
+  "slots": {
+    "common": [
+      {
+        "name": "keyword",
+        "type": "string",
+        "required": true,
+        "description": "用户原 query，全链路透传，不截断不改写"
+      }
+    ],
+    "offline_course": [
+      { "name": "course_name", "type": "string|null", "description": "标准课名或用户原话" },
+      { "name": "city", "type": "string|null", "description": "城市，不含「站」字" },
+      { "name": "phase_no", "type": "number|null", "description": "期数序号" },
+      { "name": "instructor_name", "type": "string|null", "description": "导师姓名或业务标签" },
+      {
+        "name": "time_window_days",
+        "type": "number",
+        "default": 30,
+        "description": "查询多少天内开课"
+      }
+    ],
+    "online_course": [
+      { "name": "course_name", "type": "string|null", "description": "专栏或课程名" },
+      { "name": "topic", "type": "string|null", "description": "主题词" }
+    ],
+    "leader_camp": [
+      { "name": "camp_name", "type": "string|null", "description": "营名称" },
+      { "name": "city", "type": "string|null", "description": "城市" },
+      { "name": "season", "type": "string|null", "description": "寒暑期等季节标签" }
+    ],
+    "mentor": [
+      { "name": "mentor_name", "type": "string|null", "description": "导师姓名或标签" },
+      { "name": "specialty", "type": "string|null", "description": "擅长领域，如情绪管理" }
+    ],
+    "mall_goods": [
+      { "name": "goods_name", "type": "string|null", "description": "商品名" },
+      {
+        "name": "goods_type",
+        "type": "string|null",
+        "enum": ["实物", "盲盒", null],
+        "description": "商品类型"
+      },
+      { "name": "price_range", "type": "string|null", "description": "价格区间" }
+    ],
+    "article": [
+      { "name": "topic", "type": "string|null", "description": "文章主题" },
+      { "name": "author", "type": "string|null", "description": "作者" }
+    ],
+    "video": [
+      { "name": "topic", "type": "string|null", "description": "视频主题" },
+      { "name": "duration_range", "type": "string|null", "description": "时长偏好" }
+    ],
+    "audio": [
+      { "name": "topic", "type": "string|null", "description": "音频主题" },
+      { "name": "album", "type": "string|null", "description": "专辑名" }
+    ]
+  },
+  "result_policy": {
+    "single_intent": { "max_cards": 5, "expand_inline": true },
+    "multi_intent": { "max_cards_per_section": 3, "show_count": true },
+    "empty_fallback": {
+      "trigger": "intents 为空 或 命中的 intents 全类 0 条",
+      "action": "8 类并行检索 + 相关度混排",
+      "still_empty_message": "没找到相关的内容，换个说法试试"
+    },
+    "removed": [
+      "暂不支持该类型提示",
+      "去全部看看跳转胶囊",
+      "open_all_search 动作"
+    ]
+  },
+  "output_schema": {
+    "intents": "string[]",
+    "keyword": "string",
+    "confidence": "number",
+    "slots": "object",
+    "missing": "string[]"
+  }
+}
