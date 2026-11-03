@@ -45,14 +45,20 @@ N_CHAT_ANS = "1782120560448"
 N_ERROR = "1782129629050"
 N_FALLBACK = "1782113851054"
 
-N_CONTENT_KB = "1900000000001"
-N_CONTENT_STUB = "1900000000002"
-N_CONTENT_BUILD = "1900000000003"
-N_CONTENT_GUIDE = "1900000000004"
-N_CONTENT_ANS = "1900000000005"
-N_ROUTE_B = "1900000000006"
-N_CONTENT_IF = "1900000000007"
-
+# 内容类 7 个接口（系统本身接口，URL 待回填）
+N_HTTP_ONLINE = "1900000000001"
+N_HTTP_CAMP = "1900000000002"
+N_HTTP_MENTOR = "1900000000003"
+N_HTTP_GOODS = "1900000000004"
+N_HTTP_ARTICLE = "1900000000005"
+N_HTTP_VIDEO = "1900000000006"
+N_HTTP_AUDIO = "1900000000007"
+N_CONTENT_BUILD = "1900000000010"
+N_CONTENT_IF = "1900000000011"
+N_CONTENT_GUIDE = "1900000000012"
+N_CONTENT_ANS = "1900000000013"
+N_CONTENT_NONE = "1900000000014"
+N_ROUTE_B = "1900000000020"
 CASE_COURSE = str(uuid.uuid4())
 CASE_COURSE_NO_NAME = str(uuid.uuid4())
 CASE_CONTENT = str(uuid.uuid4())
@@ -365,38 +371,7 @@ def main(text: str = "", history: str = "") -> dict:
     }
 '''
 
-stub_code = r'''# =====================================================================
-# 占位节点：线上课程 / 领袖营 / 6Q商城 的检索接口尚未提供。
-#
-# 开发接入时，把本节点替换为 HTTP 请求节点，入参与出参按下面约定：
-#
-#   入参 keyword     string  用户原 query
-#   入参 intents     string  命中类目，逗号分隔，如 "leader_camp,mall_goods"
-#   入参 city        string  城市，可空
-#
-#   出参 items       array   每项至少包含
-#                        id, type, title, cover, url
-#                        线上课程：price
-#                        领袖营  ：camp_type, start_date
-#                        6Q商城  ：price, main_image, sales
-#
-# 在接口就位之前，本节点固定返回空数组，不伪造任何数据。
-# =====================================================================
-
-
-def main(intents: str = "", keyword: str = "", city: str = ""):
-    wanted = [x for x in (intents or "").split(",") if x.strip()]
-    pending = [x for x in wanted if x in ("online_course", "leader_camp", "mall_goods")]
-
-    return {
-        "items_json": "[]",
-        "pending_types": ",".join(pending),
-        "has_result": False,
-    }
-'''
-
 build_code = r'''import json
-import re
 
 ORDER = [
     ("online_course", "线上课程"),
@@ -411,78 +386,121 @@ ORDER = [
 LABEL = dict(ORDER)
 PER_TYPE_LIMIT = 3
 
-FIELD_RE = re.compile(r"^([A-Za-z_]+)\s*[:：]\s*(.*)$")
+# 各接口字段名不统一，这里做别名映射。
+# 接口回填后若字段不在下表，把实际字段名补进对应元组即可，不用改逻辑。
+ALIAS = {
+    "id": ("id", "courseId", "goodsId", "articleId", "videoId", "audioId",
+           "mentorId", "campId", "periodId", "code"),
+    "title": ("title", "name", "goodsName", "courseName", "articleTitle",
+              "videoTitle", "audioTitle", "campName", "periodName", "mentorName"),
+    "cover": ("cover", "coverUrl", "mainImage", "image", "img", "picUrl",
+              "avatar", "thumb", "thumbnail"),
+    "url": ("url", "link", "detailUrl", "jumpUrl", "href", "shareUrl"),
+    "summary": ("summary", "desc", "description", "intro", "brief", "digest"),
+    "price": ("price", "salePrice", "sellPrice", "currentPrice", "payPrice"),
+    "duration": ("duration", "length", "videoTime", "audioTime", "timeLength"),
+    "author": ("author", "authorName", "writer", "teacherName"),
+    "specialty": ("specialty", "goodAt", "expertise", "tag", "tags"),
+}
 
-# 相关度阈值：低于此分的分段丢弃，否则任何输入都会召回结果，
-# 导致「没找到」永不触发、泛搜返回无关内容。先设 0.30，看日志再调。
-MIN_SCORE = 0.30
+# 接口可能把列表包在任意一层，按以下 key 逐层找
+LIST_KEYS = ("data", "result", "list", "records", "rows", "items", "content", "voList")
 
 
-def parse_chunk(content):
-    """把知识库分段按 key: value 解析成字典。"""
-    item = {}
-    for line in (content or "").splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        m = FIELD_RE.match(line)
-        if m:
-            item[m.group(1).lower()] = m.group(2).strip()
+def to_payload(body):
+    if isinstance(body, (dict, list)):
+        return body
+    if isinstance(body, str) and body.strip():
+        try:
+            return json.loads(body)
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
+def find_list(payload, depth=0):
+    if isinstance(payload, list):
+        return payload
+    if isinstance(payload, dict) and depth < 4:
+        for key in LIST_KEYS:
+            if key in payload:
+                found = find_list(payload[key], depth + 1)
+                if found:
+                    return found
+        for value in payload.values():
+            if isinstance(value, dict):
+                found = find_list(value, depth + 1)
+                if found:
+                    return found
+    return []
+
+
+def pick(raw, name):
+    for key in ALIAS[name]:
+        value = raw.get(key)
+        if value not in (None, "", []):
+            return value
+    return ""
+
+
+def normalize(raw, ctype):
+    if not isinstance(raw, dict):
+        return None
+    item = {
+        "id": str(pick(raw, "id") or "").strip(),
+        "type": ctype,
+        "title": str(pick(raw, "title") or "").strip(),
+        "cover": str(pick(raw, "cover") or "").strip(),
+        "url": str(pick(raw, "url") or "").strip(),
+        "summary": str(pick(raw, "summary") or "").strip(),
+        "author": str(pick(raw, "author") or "").strip(),
+        "price": str(pick(raw, "price") or "").strip(),
+        "duration": str(pick(raw, "duration") or "").strip(),
+        "specialty": str(pick(raw, "specialty") or "").strip(),
+    }
+    # 无标题无法出卡；无 id 无法去重与跳转
+    if not item["title"] or not item["id"]:
+        return None
     return item
 
 
-def main(kb_result=None, stub_json="", intents="", keyword=""):
-    wanted = [x for x in (intents or "").split(",") if x.strip()]
-    if "general" in wanted:
+def main(online_course="", leader_camp="", mentor="", mall_goods="",
+         article="", video="", audio="", intents="", keyword=""):
+    wanted = [x.strip() for x in (intents or "").split(",") if x.strip()]
+    if "general" in wanted or not wanted:
         wanted = [k for k, _ in ORDER]
 
-    sections = {k: [] for k, _ in ORDER}
+    bodies = {
+        "online_course": online_course,
+        "leader_camp": leader_camp,
+        "mentor": mentor,
+        "mall_goods": mall_goods,
+        "article": article,
+        "video": video,
+        "audio": audio,
+    }
 
-    # 1. 知识库召回的内容类
-    for chunk in kb_result or []:
-        if not isinstance(chunk, dict):
-            continue
-        score = chunk.get("score")
-        if score is not None:
-            try:
-                if float(score) < MIN_SCORE:
-                    continue
-            except (TypeError, ValueError):
-                pass
-        item = parse_chunk(chunk.get("content", ""))
-        ctype = (item.get("type") or "").strip()
-        if ctype not in sections:
-            continue
+    sections = {k: [] for k, _ in ORDER}
+    seen = set()
+    raw_counts = {}
+
+    for ctype, _ in ORDER:
+        if ctype == "offline_course":
+            continue                      # 线下课程走既有期数链，不重复查
         if ctype not in wanted:
             continue
-        if not item.get("title") or not item.get("url"):
-            continue
-        sections[ctype].append({
-            "id": item.get("id", ""),
-            "type": ctype,
-            "title": item.get("title", ""),
-            "cover": item.get("cover", ""),
-            "url": item.get("url", ""),
-            "summary": item.get("summary", ""),
-            "author": item.get("author", ""),
-            "duration": item.get("duration", ""),
-            "specialty": item.get("specialty", ""),
-            "avatar": item.get("avatar", ""),
-            "album": item.get("album", ""),
-        })
-
-    # 2. 占位接口（目前返回空）
-    try:
-        stub_items = json.loads(stub_json or "[]")
-    except (TypeError, ValueError):
-        stub_items = []
-
-    for item in stub_items:
-        ctype = (item.get("type") or "").strip()
-        if ctype in sections and ctype in wanted:
+        rows = find_list(to_payload(bodies.get(ctype)))
+        raw_counts[ctype] = len(rows)
+        for raw in rows:
+            item = normalize(raw, ctype)
+            if not item:
+                continue
+            key = (ctype, item["id"])
+            if key in seen:
+                continue
+            seen.add(key)
             sections[ctype].append(item)
 
-    # 3. 按固定顺序裁剪、组装
     blocks = []
     counts = []
     for ctype, label in ORDER:
@@ -492,27 +510,29 @@ def main(kb_result=None, stub_json="", intents="", keyword=""):
         blocks.append({"type": ctype, "total": len(items), "items": items})
         counts.append("%s %d" % (label, len(items)))
 
-    has_result = bool(blocks)
-    if not has_result:
+    # 排查用：每个类目 出卡数/接口原始条数
+    debug = "、".join(
+        "%s %d/%d" % (LABEL[k], len(sections[k]), raw_counts.get(k, 0))
+        for k in wanted if k != "offline_course"
+    )
+
+    if not blocks:
         return {
             "sections_marked": "",
             "has_result": False,
             "counts_text": "",
             "types_text": "",
-            "missing_types": "",
             "state": "empty",
+            "debug_text": debug,
         }
-
-    types_text = "、".join(LABEL[b["type"]] for b in blocks)
-    counts_text = "、".join(counts)
 
     return {
         "sections_marked": "@s_obj@" + json.dumps(blocks, ensure_ascii=False) + "@e_obj@",
         "has_result": True,
-        "counts_text": counts_text,
-        "types_text": types_text,
-        "missing_types": "",
+        "counts_text": "、".join(counts),
+        "types_text": "、".join(LABEL[b["type"]] for b in blocks),
         "state": "has_result",
+        "debug_text": debug,
     }
 '''
 
@@ -532,7 +552,7 @@ guide_system = """你是 6Q APP 的搜索结果导语生成器。
 - 文章+视频+音频：关于「恋爱咨询」，我找到了相关的文章、视频和音频：
 - 多类且含课程：先为你列出课程信息，另外还有这些文章和视频可以参考："""
 
-guide_user = "用户关键词：{{#1781491262356.keyword#}}\n命中类目：{{#1900000000003.types_text#}}\n各类条数：{{#1900000000003.counts_text#}}"
+guide_user = "用户关键词：{{#1781491262356.keyword#}}\n命中类目：{{#1900000000010.types_text#}}\n各类条数：{{#1900000000010.counts_text#}}"
 
 
 def load():
@@ -581,6 +601,12 @@ def edge(src, dst, handle="source"):
 def main():
     doc = load()
     graph = doc["workflow"]["graph"]
+    NL = chr(10)
+    NOT_FOUND_TEXT = (
+        "没找到和「{{#1781491262356.keyword#}}」相关的内容，换个说法试试～" + NL
+        + "@hsy{{#1781491262356.keyword#}}@_hsy"
+    )
+
     nodes = node_index(graph)
 
     # ---------- 1. 意图节点 ----------
@@ -655,7 +681,7 @@ def main():
     route["desc"] = (
         "CASE1 课程名明确 -> 2.15A 知识库归一再查期数\n"
         "CASE2 只有城市/导师 -> 2.15D 直接按条件查期数\n"
-        "CASE3 命中内容类 -> 3.1 知识库检索链\n"
+        "CASE3 命中内容类 -> 3.1~3.7 系统接口检索链\n"
         "CASE4 闲聊 -> 2.18\n"
         "ELSE -> 没找到"
     )
@@ -668,77 +694,95 @@ def main():
         "@hsy{{#1781491262356.keyword#}}@_hsy"
     )
 
-    # ---------- 5. 新增内容分支节点 ----------
-    kb_data = {
-        "dataset_ids": [],
-        "metadata_filtering_mode": "disabled",
-        "multiple_retrieval_config": {
-            "reranking_enable": True,
-            "reranking_mode": "reranking_model",
-            "reranking_model": {
-                "model": "qwen3-rerank",
-                "provider": "langgenius/tongyi/tongyi",
-            },
-            "score_threshold": None,
-            "top_k": 10,
-            "weights": {
-                "keyword_setting": {"keyword_weight": 0.4},
-                "vector_setting": {
-                    "embedding_model_name": "text-embedding-v3",
-                    "embedding_provider_name": "langgenius/tongyi/tongyi",
-                    "vector_weight": 0.6,
-                },
-                "weight_type": "customized",
-            },
-        },
-        "query_attachment_selector": [],
-        "query_variable_selector": [N_PARSE, "topic"],
-        "retrieval_mode": "multiple",
-        "selected": False,
-        "title": "3.1 知识库-全站内容（待选数据集）",
-        "type": "knowledge-retrieval",
-        "desc": "导入后必须在此节点选择知识库数据集，否则该节点报错。文档格式见 docs/spec-v6.md，必须含 type / url 字段。",
-    }
+    # ---------- 5. 内容链：7 个系统接口 ----------
+    BODY_TMPL = (
+        "{\n"
+        '  "userId": {{#1711528708197.user_id#}},\n'
+        '  "sessionId": {{#1711528708197.session_id#}},\n'
+        '  "keyword": "{{#1781491262356.keyword#}}",\n'
+        '  "city": "{{#1781491262356.city#}}",\n'
+        '  "page": 1,\n'
+        '  "size": 20\n'
+        "}"
+    )
 
-    stub_data = {
-        "code": stub_code,
-        "code_language": "python3",
-        "desc": "线上课程 / 领袖营 / 6Q商城 接口占位，待开发替换为 HTTP 节点",
-        "outputs": {
-            "items_json": {"children": None, "type": "string"},
-            "pending_types": {"children": None, "type": "string"},
-            "has_result": {"children": None, "type": "boolean"},
-        },
-        "retry_config": {"max_retries": 3, "retry_enabled": False, "retry_interval": 1000},
-        "selected": False,
-        "title": "3.2 占位-线上课/领袖营/商城",
-        "type": "code",
-        "variables": [
-            {"value_selector": [N_PARSE, "intents"], "value_type": "string", "variable": "intents"},
-            {"value_selector": [N_PARSE, "keyword"], "value_type": "string", "variable": "keyword"},
-            {"value_selector": [N_PARSE, "city"], "value_type": "string", "variable": "city"},
-        ],
-    }
+    DESC_TMPL = (
+        "【待回填】%s\n"
+        "需回填：接口地址、请求方式、鉴权、入参、出参\n"
+        "出参要求：%s\n"
+        "接口返回分页对象时，3.8 会自动取第一层列表；"
+        "字段名不一致时改 3.8 的 ALIAS 映射，不要改本节点结构"
+    )
+
+    def make_http(nid, title, ctype, url_ph, field_hint):
+        body = BODY_TMPL
+        return {
+            "authorization": {"config": None, "type": "no-auth"},
+            "body": {
+                "data": [{"id": "kv-" + nid, "key": "", "type": "text", "value": body}],
+                "type": "json",
+            },
+            "desc": DESC_TMPL % (url_ph, field_hint),
+            "headers": "Content-Type:application/json",
+            "isInIteration": False,
+            "isInLoop": False,
+            "method": "post",
+            "params": "",
+            "retry_config": {"max_retries": 3, "retry_enabled": False, "retry_interval": 100},
+            "selected": False,
+            "ssl_verify": True,
+            "timeout": {"connect": 10, "max_connect_timeout": 0, "max_read_timeout": 0,
+                        "max_write_timeout": 0, "read": 10, "write": 10},
+            "title": title,
+            "type": "http-request",
+            "url": url_ph,
+            "variables": [],
+        }
+
+    CONTENT_APIS = [
+        (N_HTTP_ONLINE, "3.1 HTTP-线上课程 · 待回填", "online_course",
+         "https://FILL-ME.example.com/api/online-course/list",
+         "id、title、cover、price"),
+        (N_HTTP_CAMP, "3.2 HTTP-领袖营 · 待回填", "leader_camp",
+         "https://FILL-ME.example.com/api/leader-camp/periods",
+         "id、title、cover、campType、startDate"),
+        (N_HTTP_MENTOR, "3.3 HTTP-高EQ导师 · 待回填", "mentor",
+         "https://FILL-ME.example.com/api/mentor/list",
+         "id、name、avatar、specialty"),
+        (N_HTTP_GOODS, "3.4 HTTP-6Q商城 · 待回填", "mall_goods",
+         "https://FILL-ME.example.com/api/mall/goods",
+         "id、title、mainImage、price"),
+        (N_HTTP_ARTICLE, "3.5 HTTP-文章 · 待回填", "article",
+         "https://FILL-ME.example.com/api/article/list",
+         "id、title、cover、summary、url"),
+        (N_HTTP_VIDEO, "3.6 HTTP-视频 · 待回填", "video",
+         "https://FILL-ME.example.com/api/video/list",
+         "id、title、cover、duration、url"),
+        (N_HTTP_AUDIO, "3.7 HTTP-音频 · 待回填", "audio",
+         "https://FILL-ME.example.com/api/audio/list",
+         "id、title、cover、duration、url"),
+    ]
 
     build_data = {
         "code": build_code,
         "code_language": "python3",
-        "desc": "知识库分段 + 占位结果 -> 按 type 组装分区卡片",
+        "desc": "7 个接口的 body -> 按 type 分组、去重、组装分区卡片",
         "outputs": {
             "sections_marked": {"children": None, "type": "string"},
             "has_result": {"children": None, "type": "boolean"},
             "counts_text": {"children": None, "type": "string"},
             "types_text": {"children": None, "type": "string"},
-            "missing_types": {"children": None, "type": "string"},
             "state": {"children": None, "type": "string"},
+            "debug_text": {"children": None, "type": "string"},
         },
         "retry_config": {"max_retries": 3, "retry_enabled": False, "retry_interval": 1000},
         "selected": False,
-        "title": "3.3 代码-组装分区卡片",
+        "title": "3.8 代码-解析与组装卡片",
         "type": "code",
         "variables": [
-            {"value_selector": [N_CONTENT_KB, "result"], "value_type": "array[object]", "variable": "kb_result"},
-            {"value_selector": [N_CONTENT_STUB, "items_json"], "value_type": "string", "variable": "stub_json"},
+            {"value_selector": [nid, "body"], "value_type": "string", "variable": ctype}
+            for nid, _, ctype, _, _ in CONTENT_APIS
+        ] + [
             {"value_selector": [N_PARSE, "intents"], "value_type": "string", "variable": "intents"},
             {"value_selector": [N_PARSE, "keyword"], "value_type": "string", "variable": "keyword"},
         ],
@@ -757,18 +801,27 @@ def main():
         "prompt_config": {"jinja2_variables": []},
         "prompt_template": [
             {"id": str(uuid.uuid4()), "role": "system", "text": guide_system},
-            {"edition_type": "basic", "id": str(uuid.uuid4()), "jinja2_text": "", "role": "user", "text": guide_user},
+            {"edition_type": "basic", "id": str(uuid.uuid4()), "jinja2_text": "", "role": "user",
+             "text": guide_user},
         ],
         "selected": False,
-        "title": "3.4 LLM-内容导语",
+        "title": "3.10 LLM-内容导语",
         "type": "llm",
         "vision": {"enabled": False},
     }
 
     ans_data = {
-        "answer": "{{#1900000000004.text#}}\n{{#1900000000003.sections_marked#}}",
+        "answer": ("{{#%s.text#}}" + NL + "{{#%s.sections_marked#}}") % (N_CONTENT_GUIDE, N_CONTENT_BUILD),
         "selected": False,
-        "title": "3.5 回复-内容分区卡片",
+        "title": "3.11 回复-内容分区卡片",
+        "type": "answer",
+        "variables": [],
+    }
+
+    none_data = {
+        "answer": NOT_FOUND_TEXT,
+        "selected": False,
+        "title": "3.12 回复-内容未找到",
         "type": "answer",
         "variables": [],
     }
@@ -803,20 +856,21 @@ def main():
                 "logical_operator": "and",
             }
         ],
-        "desc": "有结果才出导语和卡片；无结果直接走「没找到」，避免空分区和空导语",
+        "desc": "有结果才出导语和卡片；无结果直接走未找到，避免空导语",
         "selected": False,
-        "title": "3.3B 条件-内容是否有结果",
+        "title": "3.9 条件-内容是否有结果",
         "type": "if-else",
     }
 
-    new_nodes = [
-        new_node(N_CONTENT_KB, kb_data, 1120, 620, 240, 100),
-        new_node(N_CONTENT_STUB, stub_data, 1420, 620, 240, 100),
-        new_node(N_CONTENT_BUILD, build_data, 1720, 620, 240, 100),
-        new_node(N_CONTENT_IF, content_if, 2020, 620, 240, 90),
-        new_node(N_CONTENT_GUIDE, guide_data, 2320, 620, 240, 100),
-        new_node(N_CONTENT_ANS, ans_data, 2620, 620, 240, 100),
-        new_node(N_ROUTE_B, route_b, 1120, 300, 240, 200),
+    new_nodes = [new_node(N_ROUTE_B, route_b, 0, 0, 240, 200)]
+    for nid, title, ctype, url_ph, hint in CONTENT_APIS:
+        new_nodes.append(new_node(nid, make_http(nid, title, ctype, url_ph, hint), 0, 0, 240, 120))
+    new_nodes += [
+        new_node(N_CONTENT_BUILD, build_data, 0, 0, 240, 130),
+        new_node(N_CONTENT_IF, content_if, 0, 0, 240, 90),
+        new_node(N_CONTENT_GUIDE, guide_data, 0, 0, 240, 110),
+        new_node(N_CONTENT_ANS, ans_data, 0, 0, 240, 90),
+        new_node(N_CONTENT_NONE, none_data, 0, 0, 240, 90),
     ]
 
     keep_ids = set(nodes.keys())
@@ -844,11 +898,17 @@ def main():
     ]
 
     content_edges = [
-        (N_CONTENT_KB, N_CONTENT_STUB, "source"),
-        (N_CONTENT_STUB, N_CONTENT_BUILD, "source"),
+        (N_ROUTE_B, N_HTTP_ONLINE, CASE_CONTENT_B),
+        (N_HTTP_ONLINE, N_HTTP_CAMP, "source"),
+        (N_HTTP_CAMP, N_HTTP_MENTOR, "source"),
+        (N_HTTP_MENTOR, N_HTTP_GOODS, "source"),
+        (N_HTTP_GOODS, N_HTTP_ARTICLE, "source"),
+        (N_HTTP_ARTICLE, N_HTTP_VIDEO, "source"),
+        (N_HTTP_VIDEO, N_HTTP_AUDIO, "source"),
+        (N_HTTP_AUDIO, N_CONTENT_BUILD, "source"),
         (N_CONTENT_BUILD, N_CONTENT_IF, "source"),
         (N_CONTENT_IF, N_CONTENT_GUIDE, CASE_CONTENT_RESULT),
-        (N_CONTENT_IF, N_FALLBACK, "false"),
+        (N_CONTENT_IF, N_CONTENT_NONE, "false"),
         (N_CONTENT_GUIDE, N_CONTENT_ANS, "source"),
     ]
 
@@ -873,13 +933,12 @@ def main():
     for terminal in (N_UNIFIED, N_NO_MORE, N_ERROR, N_NEED_MORE):
         edges.append(edge(terminal, N_ROUTE_B, "source"))
 
-    edges.append(edge(N_ROUTE_B, N_CONTENT_KB, CASE_CONTENT_B))
 
     graph["edges"] = edges
 
     # ---------- 7. 元信息 ----------
     doc["app"]["name"] = "AI超级搜索 v6（全站 8 类）"
-    doc["app"]["description"] = "6Q 全站智能搜索 v6：8 类内容按意图命中，内容类走知识库，课程走既有期数接口"
+    doc["app"]["description"] = "6Q 全站智能搜索 v6：8 类内容按意图命中，内容类走系统接口，课程走既有期数接口"
 
     os.makedirs(os.path.dirname(DST) or ".", exist_ok=True)
 
@@ -922,14 +981,20 @@ LAYOUT = {
     N_CHAT_LLM: (980, 620),
     N_CHAT_ANS: (1280, 500),
     N_FALLBACK: (980, 900),
-    # 内容链
+    # 内容链：7 个接口竖向排列，末端接组装
     N_ROUTE_B: (3380, 300),
-    N_CONTENT_KB: (3680, 350),
-    N_CONTENT_STUB: (3980, 350),
-    N_CONTENT_BUILD: (4280, 350),
-    N_CONTENT_IF: (4580, 310),
-    N_CONTENT_GUIDE: (4880, 350),
-    N_CONTENT_ANS: (5180, 350),
+    N_HTTP_ONLINE: (3680, 300),
+    N_HTTP_CAMP: (3680, 440),
+    N_HTTP_MENTOR: (3680, 580),
+    N_HTTP_GOODS: (3680, 720),
+    N_HTTP_ARTICLE: (3680, 860),
+    N_HTTP_VIDEO: (3680, 1000),
+    N_HTTP_AUDIO: (3680, 1140),
+    N_CONTENT_BUILD: (3980, 1145),
+    N_CONTENT_IF: (4280, 1155),
+    N_CONTENT_GUIDE: (4580, 1140),
+    N_CONTENT_ANS: (4880, 1150),
+    N_CONTENT_NONE: (4280, 1330),
 }
 
 
