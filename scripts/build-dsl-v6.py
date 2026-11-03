@@ -51,12 +51,14 @@ N_CONTENT_BUILD = "1900000000003"
 N_CONTENT_GUIDE = "1900000000004"
 N_CONTENT_ANS = "1900000000005"
 N_ROUTE_B = "1900000000006"
+N_CONTENT_IF = "1900000000007"
 
 CASE_COURSE = str(uuid.uuid4())
 CASE_COURSE_NO_NAME = str(uuid.uuid4())
 CASE_CONTENT = str(uuid.uuid4())
 CASE_CHAT = str(uuid.uuid4())
 CASE_CONTENT_B = str(uuid.uuid4())
+CASE_CONTENT_RESULT = str(uuid.uuid4())
 
 sys_prompt = """你是 6Q APP 的 AI 超级搜索助手。
 
@@ -411,6 +413,10 @@ PER_TYPE_LIMIT = 3
 
 FIELD_RE = re.compile(r"^([A-Za-z_]+)\s*[:：]\s*(.*)$")
 
+# 相关度阈值：低于此分的分段丢弃，否则任何输入都会召回结果，
+# 导致「没找到」永不触发、泛搜返回无关内容。先设 0.30，看日志再调。
+MIN_SCORE = 0.30
+
 
 def parse_chunk(content):
     """把知识库分段按 key: value 解析成字典。"""
@@ -436,6 +442,13 @@ def main(kb_result=None, stub_json="", intents="", keyword=""):
     for chunk in kb_result or []:
         if not isinstance(chunk, dict):
             continue
+        score = chunk.get("score")
+        if score is not None:
+            try:
+                if float(score) < MIN_SCORE:
+                    continue
+            except (TypeError, ValueError):
+                pass
         item = parse_chunk(chunk.get("content", ""))
         ctype = (item.get("type") or "").strip()
         if ctype not in sections:
@@ -657,7 +670,7 @@ def main():
 
     # ---------- 5. 新增内容分支节点 ----------
     kb_data = {
-        "dataset_ids": ["【待建数据集-6Q内容库】"],
+        "dataset_ids": [],
         "metadata_filtering_mode": "disabled",
         "multiple_retrieval_config": {
             "reranking_enable": True,
@@ -682,9 +695,9 @@ def main():
         "query_variable_selector": [N_PARSE, "topic"],
         "retrieval_mode": "multiple",
         "selected": False,
-        "title": "3.1 知识库-全站内容",
+        "title": "3.1 知识库-全站内容（待选数据集）",
         "type": "knowledge-retrieval",
-        "desc": "数据集待建。文档格式见 docs/spec-v6.md，必须含 type / url 字段。",
+        "desc": "导入后必须在此节点选择知识库数据集，否则该节点报错。文档格式见 docs/spec-v6.md，必须含 type / url 字段。",
     }
 
     stub_data = {
@@ -769,9 +782,30 @@ def main():
                 "logical_operator": "and",
             }
         ],
-        "desc": "课程链跑完后补内容类；未命中站点直接结束",
+        "desc": "命中内容类才继续；纯课程查询在此结束",
         "selected": False,
-        "title": "2.4B 条件-补充内容分支",
+        "title": "2.4B 条件-是否检索内容类",
+        "type": "if-else",
+    }
+
+    content_if = {
+        "cases": [
+            {
+                "case_id": CASE_CONTENT_RESULT,
+                "conditions": [{
+                    "comparison_operator": "is",
+                    "id": str(uuid.uuid4()),
+                    "value": True,
+                    "varType": "boolean",
+                    "variable_selector": [N_CONTENT_BUILD, "has_result"],
+                }],
+                "id": CASE_CONTENT_RESULT,
+                "logical_operator": "and",
+            }
+        ],
+        "desc": "有结果才出导语和卡片；无结果直接走「没找到」，避免空分区和空导语",
+        "selected": False,
+        "title": "3.3B 条件-内容是否有结果",
         "type": "if-else",
     }
 
@@ -779,9 +813,10 @@ def main():
         new_node(N_CONTENT_KB, kb_data, 1120, 620, 240, 100),
         new_node(N_CONTENT_STUB, stub_data, 1420, 620, 240, 100),
         new_node(N_CONTENT_BUILD, build_data, 1720, 620, 240, 100),
-        new_node(N_CONTENT_GUIDE, guide_data, 2020, 620, 240, 100),
-        new_node(N_CONTENT_ANS, ans_data, 2320, 620, 240, 100),
-        new_node(N_ROUTE_B, route_b, 1120, 300, 240, 90),
+        new_node(N_CONTENT_IF, content_if, 2020, 620, 240, 90),
+        new_node(N_CONTENT_GUIDE, guide_data, 2320, 620, 240, 100),
+        new_node(N_CONTENT_ANS, ans_data, 2620, 620, 240, 100),
+        new_node(N_ROUTE_B, route_b, 1120, 300, 240, 200),
     ]
 
     keep_ids = set(nodes.keys())
@@ -811,7 +846,9 @@ def main():
     content_edges = [
         (N_CONTENT_KB, N_CONTENT_STUB, "source"),
         (N_CONTENT_STUB, N_CONTENT_BUILD, "source"),
-        (N_CONTENT_BUILD, N_CONTENT_GUIDE, "source"),
+        (N_CONTENT_BUILD, N_CONTENT_IF, "source"),
+        (N_CONTENT_IF, N_CONTENT_GUIDE, CASE_CONTENT_RESULT),
+        (N_CONTENT_IF, N_FALLBACK, "false"),
         (N_CONTENT_GUIDE, N_CONTENT_ANS, "source"),
     ]
 
@@ -824,7 +861,7 @@ def main():
         # 主路由
         edge(N_ROUTE, N_COURSE_KB, CASE_COURSE),
         edge(N_ROUTE, N_HTTP_GENERAL, CASE_COURSE_NO_NAME),
-        edge(N_ROUTE, N_CONTENT_KB, CASE_CONTENT),
+        edge(N_ROUTE, N_ROUTE_B, CASE_CONTENT),
         edge(N_ROUTE, N_CHAT_LLM, CASE_CHAT),
         edge(N_ROUTE, N_FALLBACK, "false"),
     ]
@@ -832,8 +869,8 @@ def main():
     for s, t, h in course_edges + content_edges:
         edges.append(edge(s, t, h))
 
-    # 课程链结束后补内容分支
-    for terminal in (N_UNIFIED, N_EMPTY, N_NO_MORE, N_ERROR, N_NEED_MORE):
+    # 课程链终点补内容分支
+    for terminal in (N_UNIFIED, N_NO_MORE, N_ERROR, N_NEED_MORE):
         edges.append(edge(terminal, N_ROUTE_B, "source"))
 
     edges.append(edge(N_ROUTE_B, N_CONTENT_KB, CASE_CONTENT_B))
@@ -845,11 +882,68 @@ def main():
     doc["app"]["description"] = "6Q 全站智能搜索 v6：8 类内容按意图命中，内容类走知识库，课程走既有期数接口"
 
     os.makedirs(os.path.dirname(DST) or ".", exist_ok=True)
+
+    # ---------- 8. 显式布局：分泳道摆放，避免与旧节点混在一起 ----------
+    apply_layout(graph)
+
     with open(DST, "w", encoding="utf-8") as f:
         yaml.safe_dump(doc, f, allow_unicode=True, sort_keys=False, width=1000)
 
     print("wrote", DST)
     print("nodes", len(graph["nodes"]), "edges", len(graph["edges"]))
+
+
+# 泳道布局：(x, y)。入口在最左，课程链横向展开，内容链在右侧单独一条，课程分支出口收成一列。
+LAYOUT = {
+    # 入口
+    N_START: (-900, -133),
+    N_CLEAN: (-580, -25),
+    N_SHOWN: (-280, -55),
+    N_LLM: (20, -43),
+    N_PARSE: (300, -39),
+    N_ROUTE: (580, -410),
+    # 课程链主路
+    N_COURSE_KB: (980, -44),
+    N_COURSE_KB_PARSE: (1280, -25),
+    N_COURSE_KB_IF: (1580, -183),
+    N_HTTP_GENERAL: (1880, -285),
+    N_HTTP_COURSE: (1880, -67),
+    N_PARSE_RESULT: (2180, -25),
+    N_RESULT_IF: (2480, -353),
+    N_GUIDE: (2780, -43),
+    N_GUIDE_B: (2780, 100),
+    N_UNIFIED: (3080, -73),
+    # 课程分支出口（收成一列）
+    N_EMPTY: (2780, 560),
+    N_NO_MORE: (2780, 900),
+    N_ERROR: (2780, 1180),
+    N_NEED_MORE: (2780, 1460),
+    # 闲聊与兜底
+    N_CHAT_LLM: (980, 620),
+    N_CHAT_ANS: (1280, 500),
+    N_FALLBACK: (980, 900),
+    # 内容链
+    N_ROUTE_B: (3380, 300),
+    N_CONTENT_KB: (3680, 350),
+    N_CONTENT_STUB: (3980, 350),
+    N_CONTENT_BUILD: (4280, 350),
+    N_CONTENT_IF: (4580, 310),
+    N_CONTENT_GUIDE: (4880, 350),
+    N_CONTENT_ANS: (5180, 350),
+}
+
+
+def apply_layout(graph):
+    for n in graph["nodes"]:
+        pos = LAYOUT.get(n["id"])
+        if not pos:
+            raise SystemExit("缺少布局坐标: %s %s" % (n["id"], n["data"].get("title")))
+        n["position"] = {"x": float(pos[0]), "y": float(pos[1])}
+        n["positionAbsolute"] = {"x": float(pos[0]), "y": float(pos[1])}
+        n["sourcePosition"] = "right"
+        n["targetPosition"] = "left"
+
+    graph["viewport"] = {"x": 415.0, "y": 243.0, "zoom": 0.35}
 
 
 if __name__ == "__main__":

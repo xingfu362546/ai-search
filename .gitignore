@@ -10,3 +10,11 @@ _v.py
 _scope_unzip/
 _scope_new_unzip/
 __pycache__/
+output/scope-shots/
+scripts/build-scope-docx.ps1
+scripts/capture-scope-shots.mjs
+scripts/debug-template-paras.ps1
+scripts/scope-doc-content.json
+output/dsl-preview*.png
+_t.py
+_v.py
